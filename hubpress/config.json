@@ -1,10 +1,1 @@
-{
-  "meta": {
-    "username": "pysysops",
-    "repositoryName": "pysysops.github.io",
-    "branch": "master"
-  },
-  "theme": {
-    "name": "Casper"
-  }
-}
+{"meta":{"username":"pysysops","repositoryName":"pysysops.github.io","branch":"master"},"site":{"title":"Tim Birkett ","description":"Musings of a Gifted Idiot","postsPerPage":"10","url":"https://pysysops.github.io"},"socialnetwork":{},"theme":{"name":"Casper","url":"//pysysops.github.io/themes/Casper"}}
