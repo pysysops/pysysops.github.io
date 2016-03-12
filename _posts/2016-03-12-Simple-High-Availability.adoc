@@ -1,1 +1,2 @@
 = Simple High Availability
+:hp-tags: Resilience, HA, Pragmatic, keepalived
