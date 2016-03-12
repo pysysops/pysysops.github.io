@@ -1,3 +1,2 @@
-= Moved to HubPress from Jekyll / S3
-:hp-tags: HubpressIO, Blogging, Awesome
+= Moved to HubPress from Jekyll /
 
