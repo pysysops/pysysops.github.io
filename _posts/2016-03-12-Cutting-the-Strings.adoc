@@ -1,2 +1,0 @@
-= Cutting the Strings
-:hp-tags: Masterless Puppet, Configuration Management, DevOps, Automation
