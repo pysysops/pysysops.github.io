@@ -25,7 +25,7 @@ Your Browser doesn't support HTML5 video. Download it here:<a href="https://dest
 </video>
 ++++
 
-Wow! What an awesome and believable presentation. If you're like me, you were probably frantically searching Github for this amazing text editor until he admitted: It was all a lie. 
+Wow! What an awesome and believable presentation. If you're like me, you were probably frantically searching Github for this amazing text editor until he admitted: *It was all a lie!* 
 
 I'm not saying everyone who gives a cool presentation is lying. Just that what they are showing you is often an opinion, an extension of the truth. 
 
