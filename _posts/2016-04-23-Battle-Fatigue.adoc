@@ -8,6 +8,7 @@ As a lateral hire straight from industry, I had a 2 day induction, spent 3 days 
 It hasn't been easy and coming from a place where I knew exactly where my boundaries were, set my own experience and had overall freedom to a consultancy position with a local government client hasn't been easy.
 
 == Imposter Syndrome
+
 Almost every day I battle Imposter Syndrome which I'm realising is quite a common ThoughtWorker trait. We're working in an industry that is filled with great people, many of them working alongside us.
 
 I think the nature of the tech industry itself generates a lot of anxiety in those in it. Especially us generalists who feel like we should (and want to) know everything. There's so many new things going on, new opinions, new products and new key notes / presentations popping up on youtube.
@@ -19,7 +20,7 @@ I'd like to take the opportunity to bring some reality to all of us who feel ina
 Here's a perfect video to demonstrate (watch the whole thing):
 
 ++++
-<video width="95%" controls>
+<video width="320" controls>
 <source src="https://destroyallsoftware-talks.s3.amazonaws.com/a-whole-new-world.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIKRVCECXBC4ZGHIQ%2F20160423%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20160423T103754Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=4f6a4ae1f556def8ccec39a28c11c36f049372758a079af9b239ee885af450e5" type="video/mp4">
 Your Browser doesn't support HTML5 video. Download it here:<a href="https://destroyallsoftware-talks.s3.amazonaws.com/a-whole-new-world.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIKRVCECXBC4ZGHIQ%2F20160423%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20160423T103754Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=4f6a4ae1f556def8ccec39a28c11c36f049372758a079af9b239ee885af450e5">Destroy All Software - A Whole New World.</a>
 </video>
@@ -27,6 +28,17 @@ Your Browser doesn't support HTML5 video. Download it here:<a href="https://dest
 
 Wow! What an awesome and believable presentation. If you're like me, you were probably frantically searching Github for this amazing text editor until he admitted: *It was all a lie!* 
 
-I'm not saying everyone who gives a cool presentation is lying. Just that what they are showing you is often an opinion, an extension of the truth. 
+I'm not saying everyone who gives a cool presentation is lying. Just that what they are showing you is often an opinion, an extension of the truth, a truth which is personal to them.
 
+== Procrastination
+
+I think a key contributor to imposter syndrome and the anxiety that comes with it is procrastination. Everyone procrastinates at times, often we need to research think, investigate others experiences and read documentation on technologies before we decide they are fit for purpose. Then we build things rapidly in quite a small amount of time in comparison to the thinking time. 
+
+Procrastination and thinking time is all very well when you have a deadline. you can make a decision when you've gathered enough info and watched enough cats fall off things, to get on with building something.
+
+Where procrastination becomes a problem is in situations where you have no dead line. situations like life that seem never ending. This gets worse when you have no goal, no vision of your own future. I guess it's a higher form of mindfulness, you're permanently in the moment. This is not an easy place to be (believe me). going with the flow for a long time makes you feel as if you're a spectator or even an intruder in your own life. 
+
+Tim Urban (https://twitter.com/waitbutwhy[*@waitbutwhy*]) has recently done a TED talk on procrastination, which I think is one of the top TED talks I've seen:
+
+video::mMOHfgKxuYI[youtube]
 
