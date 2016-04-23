@@ -18,7 +18,7 @@ I'd like to take the opportunity to bring some reality to all of us who feel ina
 Here's a perfect video to demonstrate (watch the whole thing):
 
 ++++
-<video width="95%" controls>
+<video width="100%" controls>
 <source src="https://destroyallsoftware-talks.s3.amazonaws.com/a-whole-new-world.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIKRVCECXBC4ZGHIQ%2F20160423%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20160423T103754Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=4f6a4ae1f556def8ccec39a28c11c36f049372758a079af9b239ee885af450e5" type="video/mp4">
 Your Browser doesn't support HTML5 video. Download it here:<a href="https://destroyallsoftware-talks.s3.amazonaws.com/a-whole-new-world.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIKRVCECXBC4ZGHIQ%2F20160423%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20160423T103754Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=4f6a4ae1f556def8ccec39a28c11c36f049372758a079af9b239ee885af450e5">Destroy All Software - A Whole New World.</a>
 </video>
