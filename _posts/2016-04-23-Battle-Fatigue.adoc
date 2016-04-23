@@ -1,0 +1,25 @@
+= Battle Fatigue
+:hp-tags: Imposter Syndrome, Self Confidence, Procrastination
+
+I've been working with ThoughtWorks for just over 6 weeks now as a "Senior Infrasturucture Developer" or "DevOps Consultant".
+
+As a lateral hire straight from industry, I had a 2 day induction, spent 3 days on "The Beach" in the Manchester office and  got dropped in at the deep end on a Local Government delivery and digital transformation project.
+
+It hasn't been easy and coming from a place where I knew exactly where my boundaries were, set my own experience and had overall freedom to a consultancy position with a local government client hasn't been easy.
+
+Almost every day I battle Imposter Syndrome which I'm realising is quite a common ThoughtWorker trait. We're working in an industry that is filled with great people, many of them working alongside us.
+
+I think the nature of the tech industry itself generates a lot of anxiety in those in it. Especially us generalists who feel like we should (and want to) know everything. There's so many new things going on, new opinions, new products and new key notes / presentations popping up on youtube.
+
+These all create the perfect environment for anxiety, procrastination and imposter syndrome to grow, sometimes uncontrollably. 
+
+I'd like to take the opportunity to bring some reality to all of us who feel inadequate or like we should be as awesome as the speakers we admire. 
+
+Here's a perfect video to demonstrate (watch the whole thing):
+
+++++
+<video width="320" height="240" controls>
+<source src="https://destroyallsoftware-talks.s3.amazonaws.com/a-whole-new-world.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIKRVCECXBC4ZGHIQ%2F20160423%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20160423T103754Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=4f6a4ae1f556def8ccec39a28c11c36f049372758a079af9b239ee885af450e5" type="video/mp4">
+Your Browser doesn't support HTML5 video. Download it here:<a href="https://destroyallsoftware-talks.s3.amazonaws.com/a-whole-new-world.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIKRVCECXBC4ZGHIQ%2F20160423%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20160423T103754Z&X-Amz-Expires=14400&X-Amz-SignedHeaders=host&X-Amz-Signature=4f6a4ae1f556def8ccec39a28c11c36f049372758a079af9b239ee885af450e5">Destroy All Software - A Whole New World.</a>
+</video>
+++++
