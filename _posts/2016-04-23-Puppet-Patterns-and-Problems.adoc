@@ -3,3 +3,11 @@
 
 Over my years in the tech industry I've gained a lot of experience with Configuration Managemnt tools such as Puppet, Chef and Ansible. In this post I'd like to share with you my experience opinions and advice on using Puppet as a Configuration Management tool. Hopefully this helps some of you out there to beat Puppet into submission.
 
+== Puppet Repo Layout
+
+I've worked with Puppet and implemented several installations from scratch both Puppet Server/Agent and Masterless Puppet. Here's some of the common things you might see and and my thoughts on each.
+
+=== Everything in the Site Manifest
+
+
+
