@@ -7,7 +7,7 @@ Over my years in the tech industry I've gained a lot of experience with Configur
 
 I've worked with Puppet and implemented several installations from scratch both Puppet Server/Agent and Masterless Puppet. Here's some of the common things you might see and and my thoughts on each.
 
-=== Everything in the Site Manifest
+=== Everything in Manifests
 
 
 In many beginners tutorials you get taught to put all your code in manifests. For example:
