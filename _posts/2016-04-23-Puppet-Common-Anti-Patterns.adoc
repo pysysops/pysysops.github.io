@@ -43,6 +43,6 @@ Although this way works and you know that your module versions are pinned, there
 
 == Everything in Separate Repos
 
-== Overuse of Puppet Environments
+== Misuse of Puppet Environments
 
 == Manually Deploying Puppet Code
