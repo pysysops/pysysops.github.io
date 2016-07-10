@@ -1,16 +1,11 @@
-= Puppet - Patterns and Problems
+= Puppet - Common Anti-Patterns
 :hp-tags: Puppet, Automation, Configuration Management, Devops
 
 Over my years in the tech industry I've gained a lot of experience with Configuration Managemnt tools such as Puppet, Chef and Ansible. In this post I'd like to share with you my experience opinions and advice on using Puppet as a Configuration Management tool. Hopefully this helps some of you out there to beat Puppet into submission.
 
-== Puppet Repo Layout
+== Everything in Manifests
 
-I've worked with Puppet and implemented several installations from scratch both Puppet Server/Agent and Masterless Puppet. Here's some of the common things you might see and and my thoughts on each.
-
-=== Everything in Manifests
-
-
-In many beginners tutorials you get taught to put all your code in manifests. For example:
+In many beginners tutorials you get taught to put all your code in manifests such as `site.pp` or `nodes.pp`. For example:
 
 ```
 node 'puppetclient1.mydomain.net' {
@@ -19,13 +14,35 @@ node 'puppetclient1.mydomain.net' {
 
 node 'puppetclient2.mydomain.net' {
   include nginx_class
+  file {'/opt/deployment_script':
+    ensure => 'file',
+    owner  => 'deploy',
+    group  => 'deploy',
+    mode   => '0750'
+  }
 }
 
 node default {
-  package { "perl": 
+  package { 'perl': 
     ensure => present
   }
 }
 ```
 
-This is all well in the beginning, but 
+This is great when you're just starting out with a few servers managed you think you get it. Then you add a few more servers, you start adding more node specific config and before you know it you've got 10'000 lines of hand-crafted artisanal Puppet code. Much of which is probably duplicated. This was common in the early deys af Puppet. It was how I started back with Puppet 0.24.
+
+Although, it's not the best idea to manage your infrastructure in this way it's actually a reasonably good way to very easily and simply bootstrap cloud instances. with separate manifests based on server type (`web.pp`, `app.pp`, `lb.pp` etc). These can than be applied using https://cloudinit.readthedocs.io/en/latest/[cloudinit] to create an immutable bootstrapped node.
+
+== Monolithic `modules` Directory
+
+Quite often I see repos where either people have `puppet module install`'d straight into the `modules` directory or they've downloaded a module and extracted it there. They then commit the whole repo including their own modules mixed in with upstream modules into source control. This pattern has a few problems, you don't know what is a locally developed module and what is an upstream module and there's no way of easily seeing what versions of modules are deployed. It also adds a lot of extra code to your Puppet repository.
+
+Although this way works and you know that your module versions are pinned, there's tools out there that make it much easier to manage your Puppet modules such as http://librarian-puppet.com/[librarian-puppet] and https://github.com/puppetlabs/r10k[r10k].
+
+== Configuration Data in Code
+
+== Everything in Separate Repos
+
+== Overuse of Puppet Environments
+
+== Manually Deploying Puppet Code
