@@ -55,7 +55,7 @@ class profile::base::dns{
 }
 ```
 
-This works but the code isn't re-usable. If you deploy to a different network or DC are your DNS servers still the same? To improve reusablility, change the variable to be a class parameter:
+This works but the code isn't re-usable. If you deploy to a different network or DC are your DNS servers still the same? To improve reusablility, change the variable to be a class parameter with an optional default value:
 
 ```
 class profile::base::dns (
@@ -89,8 +89,7 @@ profile::base::dns:
     - '10.10.1.1'
 ```
 
-
-
+Now you avoid multiple classes or writing `case` or `if {...} else {...}` logic in your class file. 
 
 == Everything in Separate Repos
 
