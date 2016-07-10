@@ -41,6 +41,57 @@ Although this way works and you know that your module versions are pinned, there
 
 == Configuration Data in Code
 
+When writing Puppet code it's sometimes tempting to hard-code things like IP addresses or node specific things. For example:
+```
+class profile::base::dns{
+  $dns_servers = ['192.168.1.1', '192.168.1.2']
+  file { '/etc/resolv.conf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0444',
+    content => template('etc/resolv.conf.erb')
+  }
+}
+```
+
+This works but the code isn't re-usable. If you deploy to a different network or DC are your DNS servers still the same? To improve reusablility, change the variable to be a class parameter:
+
+```
+class profile::base::dns (
+  $dns_servers = ['8.8.8.8', '8.8.4.4']
+){
+  file { '/etc/resolv.conf':
+    ensure  => present,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0444',
+    content => template('etc/resolv.conf.erb')
+  }
+}
+```
+Then you can specify environment (network, node, DC) specific things in Hiera:
+
+192.168.1.0.yaml:
+```
+---
+profile::base::dns:
+  dns_servers:
+    - '192.168.1.1'
+    - '192.168.1.2'
+```
+10.10.0.0.yaml:
+```
+---
+profile::base::dns:
+  dns_servers:
+    - '10.10.0.1'
+    - '10.10.1.1'
+```
+
+
+
+
 == Everything in Separate Repos
 
 == Misuse of Puppet Environments
