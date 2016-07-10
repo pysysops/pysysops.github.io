@@ -93,6 +93,8 @@ Now you avoid multiple classes or writing `case` or `if {...} else {...}` logic 
 
 == Everything in Separate Repos
 
+As you can see above, I've mentioned a "profile".
+
 == Misuse of Puppet Environments
 
 == Manually Deploying Puppet Code
