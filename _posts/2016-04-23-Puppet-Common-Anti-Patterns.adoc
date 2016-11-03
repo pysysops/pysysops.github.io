@@ -95,10 +95,12 @@ Now you avoid multiple classes or writing `case` or `if {...} else {...}` logic 
 
 == Everything in Separate Repos
 
-As you can see above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**. The idea is that you assign one "Role" per server and the role is made up of individual bitesized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems. I'll jump straight in with a code example:
+As you can see above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**. The idea is that you assign one "Role" per server and the role is made up of individual bitesized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems. I'll jump straight in with some code examples:
+
+== Roles
 
 roles/manifests/base.pp
-```
+``=`
 # Base Puppet Role
 class roles::base {
   include profiles::base
