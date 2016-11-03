@@ -43,6 +43,7 @@ Although this way works and you know that your module versions are pinned, there
 
 When writing Puppet code it's sometimes tempting to hard-code things like IP addresses or node specific things. For example:
 ```
+# DNS Config
 class profile::base::dns{
   $dns_servers = ['192.168.1.1', '192.168.1.2']
   file { '/etc/resolv.conf':
@@ -58,6 +59,7 @@ class profile::base::dns{
 This works but the code isn't re-usable. If you deploy to a different network or DC are your DNS servers still the same? To improve reusablility, change the variable to be a class parameter with an optional default value:
 
 ```
+# DNS Config
 class profile::base::dns (
   $dns_servers = ['8.8.8.8', '8.8.4.4']
 ){
@@ -93,7 +95,30 @@ Now you avoid multiple classes or writing `case` or `if {...} else {...}` logic 
 
 == Everything in Separate Repos
 
-As you can see above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**
+As you can see above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**. The idea is that you assign one "Role" per server and the role is made up of individual bitesized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems. I'll jump straight in with a code example:
+
+roles/manifests/base.pp
+```
+# Base Puppet Role
+class roles::base {
+  include profiles::base
+}
+```
+
+roles/manifests/web.pp
+```
+# Web Server Role
+class roles::web inherits roles::base {
+
+  Class['profiles::nginx'] -> Class['profiles::mod_security']
+
+  include profiles::nginx
+  include profiles::mod_security
+  include profiles::deploy_agent
+  
+}
+```
+
 
 == Misuse of Puppet Environments
 
