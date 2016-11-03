@@ -100,7 +100,7 @@ As you can see above, I've mentioned a "profile" class. A common pattern when de
 == Roles
 
 roles/manifests/base.pp
-``=`
+```
 # Base Puppet Role
 class roles::base {
   include profiles::base
