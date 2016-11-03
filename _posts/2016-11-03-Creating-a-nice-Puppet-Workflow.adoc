@@ -1,0 +1,25 @@
+= Creating a nice Puppet Workflow
+
+I'll jump straight in with some code examples:
+
+=== Roles
+
+roles/manifests/base.pp
+```
+# Base Puppet Role
+class roles::base {
+  include profiles::base
+}
+```
+
+roles/manifests/web.pp
+```
+# Web Server Role
+class roles::web inherits roles::base {
+
+  Class['profiles::nginx'] -> Class['profiles::mod_security']
+
+  include profiles::nginx
+  include profiles::mod_security
+  include profiles::deploy_agent
+  
