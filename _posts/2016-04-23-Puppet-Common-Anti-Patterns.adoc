@@ -35,9 +35,11 @@ Although, it's not the best idea to manage your infrastructure in this way it's 
 
 == Monolithic `modules` Directory
 
-Quite often I see repos where either people have `puppet module install`'d straight into the `modules` directory or they've downloaded a module and extracted it there. They then commit the whole repo including their own modules mixed in with upstream modules into source control. This pattern has a few problems, you don't know what is a locally developed module and what is an upstream module and there's no way of easily seeing what versions of modules are deployed. It also adds a lot of extra code to your Puppet repository.
+Quite often I see repos where either people have `puppet module install`'d straight into the `modules` directory or they've downloaded a module and extracted it there. They then commit the whole repo including their own modules mixed in with upstream modules into source control.
 
-Although this way works and you know that your module versions are pinned, there's tools out there that make it much easier to manage your Puppet modules such as http://librarian-puppet.com/[librarian-puppet] and https://github.com/puppetlabs/r10k[r10k].
+This pattern has a few problems, you don't know what is a locally developed module and what is an upstream module and there's no way of easily seeing what versions of modules are deployed. It also adds a lot of extra code to your Puppet repository.
+
+Although this way works and you know that your module versions are pinned, tools are out there that make it much easier to manage your Puppet modules such as http://librarian-puppet.com/[librarian-puppet] and https://github.com/puppetlabs/r10k[r10k].
 
 == Configuration Data in Code
 
@@ -56,7 +58,9 @@ class profile::base::dns{
 }
 ```
 
-This works but the code isn't re-usable. If you deploy to a different network or DC are your DNS servers still the same? To improve reusablility, change the variable to be a class parameter with an optional default value:
+This works, but the code isn't re-usable. If you deploy to a different network or DC are your DNS servers still the same?
+
+To improve re-usablility, change the variable to be a class parameter with an optional default value:
 
 ```
 # DNS Config
@@ -74,7 +78,7 @@ class profile::base::dns (
 ```
 Then you can specify environment (network, node, DC) specific things in Hiera:
 
-192.168.1.0.yaml:
+dc1.example.com.yaml:
 ```
 ---
 profile::base::dns:
@@ -82,7 +86,7 @@ profile::base::dns:
     - '192.168.1.1'
     - '192.168.1.2'
 ```
-10.10.0.0.yaml:
+dc2.example.com.yaml:
 ```
 ---
 profile::base::dns:
@@ -95,9 +99,11 @@ Now you avoid multiple classes or writing `case` or `if {...} else {...}` logic 
 
 == Everything in Separate Repos
 
-As you can see above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**. The idea is that you assign one "Role" per server and the role is made up of individual bitesized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems.
+As you can see above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**. The idea is that you assign one "Role" per server and the role is made up of individual bite-sized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems.
 
+A common and problematic pattern I've seen is maintaining a SCM repo for roles, an SCM repo for profiles, an SCM repo for the "control repo" and a separate SCM repo for hieradata. This can then turn into multiple branches of each and before you know it you're maintaining 12 versions of a diverging code base. It's common to see this when people have followed some "best practise" blog post without fully thinking things through. You also often see this when developers created the code initially. They love git branches and complexity. Especially if trying to bring Gitflow to Puppet code.
 
+Here's my top tip when deciding how to organise your repos: KISS - Have no more than one repo for your Puppet code. Multiple repos and branches leads to managing multiple very different code bases, different module versions in each environment, merge tasks, complex git fixing... a nightmare. There is an awesome control-repo by the guys at Example42 here: https://github.com/example42/control-repo
 
 == Misuse of Puppet Environments
 
