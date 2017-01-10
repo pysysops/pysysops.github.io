@@ -107,4 +107,11 @@ Here's my top tip when deciding how to organise your repos: KISS - Have no more 
 
 == Misuse of Puppet Environments
 
+This ties into the above. With the R10k tool it's easy to manage environments dynamically with Git branches. You can then assign subsets of servers to different branches of Puppet code. THis sounds great, we have applications deployed to different environments like test, dev, stage, uat or production. Cool! let's create all thos branches... STOP!!
+
+Puppet environments are a powerful thing but I don;t believe you should confuse Puppet environments with Application environments. 
+You should aim to manage your infrastructure in a single Puppet environment: "production". If you arrange your hieradata hierarchy sensibly you can manage the differences in configuration in a single branch. 
+
+Puppet branches should be used to temporarily develop and test new configuration and Puppet code in a c
+
 == Manually Deploying Puppet Code
