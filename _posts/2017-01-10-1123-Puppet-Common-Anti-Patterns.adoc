@@ -1,5 +1,6 @@
 = Puppet - Common Anti-Patterns
 :hp-tags: Puppet, Automation, Configuration Management, Devops
+:published_at: 2017-01-10 11:23
 
 Over my years in the tech industry I've gained a lot of experience with Configuration Managemnt tools such as Puppet, Chef and Ansible. In this post I'd like to share with you my experiences, opinions and advice on using Puppet as a Configuration Management tool. Hopefully this helps some of you out there to beat Puppet into submission.
 
@@ -101,13 +102,13 @@ Now you avoid multiple classes or writing `case` or `if {...} else {...}` logic 
 
 As you can see above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**. The idea is that you assign one "Role" per server and the role is made up of individual bite-sized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems.
 
-A common and problematic pattern I've seen is maintaining a SCM repo for roles, an SCM repo for profiles, an SCM repo for the "control repo" and a separate SCM repo for hieradata. This can then turn into multiple branches of each and before you know it you're maintaining 12 versions of a diverging code base. It's common to see this when people have followed some "best practice" blog post without fully thinking things through. You also often see this when developers created the code initially. They love git branches and complexity. Especially if trying to bring Gitflow to Puppet code.
+A common and problematic pattern I've seen is maintaining an SCM repo for roles, an SCM repo for profiles, an SCM repo for the "control repo" and a separate SCM repo for hieradata. This can then turn into multiple branches of each and before you know it you're maintaining 12 versions of a diverging code base. It's common to see this when people have followed some "best practice" blog post without fully thinking things through. You also often see this when developers created the code initially. They love git branches and complexity. Especially if trying to bring Gitflow to Puppet code.
 
-Here's my top tip when deciding how to organise your repos: KISS - Have no more than one repo for your Puppet code. Multiple repos and branches leads to managing multiple very different code bases, different module versions in each environment, merge tasks, complex git fixing... a nightmare. There is an awesome control-repo by the guys at Example42 here: https://github.com/example42/control-repo
+Here's my top tip when deciding how to organize your repos: KISS - Have no more than one repo for your Puppet code. Multiple repos and branches leads to managing multiple very different code bases, different module versions in each environment, merge tasks, complex git fixing... a nightmare. There is an awesome control-repo by the guys at Example42 here: https://github.com/example42/control-repo
 
 == Misuse of Puppet Environments
 
-With the r10k tool it's easy to manage environments dynamically with Git branches. You can then assign subsets of servers to different branches of Puppet code. THis sounds great, we have applications deployed to different environments like test, dev, stage, uat or production. Cool! let's create all those branches... STOP!!
+With the r10k tool, it's easy to manage environments dynamically with Git branches. You can then assign subsets of servers to different branches of Puppet code. This sounds great, we have applications deployed to different environments like test, dev, stage, uat or production. Cool! let's create all those branches... STOP!!
 
 Puppet environments are a powerful thing, but I don't believe you should confuse Puppet environments with Application environments. You should aim to manage your infrastructure in a single Puppet environment: "production". If you arrange your hieradata hierarchy sensibly you can manage the differences in configuration in a single branch.
 
