@@ -1,1 +1,2 @@
 = Easy Infrastructure Testing with GOSS
+:hp-tags: Configuration Management, Testing, Security, Monitoring
