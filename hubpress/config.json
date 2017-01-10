@@ -7,9 +7,10 @@
   },
   "site": {
     "title": "Tim Birkett ",
-    "description": "cat /dev/random",
+    "description": "cat /dev/urandom",
     "cover": "/images/index.jpg",
     "postsPerPage": "10",
+    "googleAnalytics": "UA-90121848-1",
     "disqus": "@pysysops"
   },
   "socialnetwork": {
