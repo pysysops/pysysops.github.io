@@ -107,9 +107,12 @@ Here's my top tip when deciding how to organise your repos: KISS - Have no more 
 
 == Misuse of Puppet Environments
 
-This ties into the above. With the R10k tool it's easy to manage environments dynamically with Git branches. You can then assign subsets of servers to different branches of Puppet code. THis sounds great, we have applications deployed to different environments like test, dev, stage, uat or production. Cool! let's create all those branches... STOP!!
+With the r10k tool it's easy to manage environments dynamically with Git branches. You can then assign subsets of servers to different branches of Puppet code. THis sounds great, we have applications deployed to different environments like test, dev, stage, uat or production. Cool! let's create all those branches... STOP!!
 
 Puppet environments are a powerful thing, but I don't believe you should confuse Puppet environments with Application environments. You should aim to manage your infrastructure in a single Puppet environment: "production". If you arrange your hieradata hierarchy sensibly you can manage the differences in configuration in a single branch.
 
-Puppet branches should be used when you need to test big changes or new features out in a controlled way (of course you're developing and testing on Vagrant). Create a branch like "new_feature", develop it locally testing it on Vagrant then test out the changes on a suitable piece of infrastructure by running `puppet apply --environment new_feature`. Don't forget your security and perf testing at this point ;) if everything looks good, open a PR, get it reviewed, merged to production and delete the branch. 
+Puppet branches should be used when you need to test big changes or new features out in a controlled way (of course you're developing and testing on Vagrant). Create a branch like "new_feature", develop it locally testing it on Vagrant then test out the changes on a suitable piece of infrastructure by running `puppet apply --environment new_feature`. Don't forget your security and perf testing at this point ;) if everything looks good, open a PR, get it reviewed, merged to production and delete the branch.
 
+== Closing Thoughts
+
+Most of the opinions I've formed are from being forced to work with some painful Puppet code setups and processes. My best advice to anyone developing their infrastructure code: Keep it simple, think about it before you go ahead, use upstream modules and keep an open mind.
