@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="http://www.pysysops.com/favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="//www.pysysops.com/themes/casper/assets/css/screen.css?v=1484110163670" />
+    <link rel="stylesheet" type="text/css" href="//www.pysysops.com/themes/casper/assets/css/screen.css?v=1484112599779" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="http://www.pysysops.com/2017/01/10/Easy-Infrastructure-Testing-with-Goss.html" />
@@ -107,6 +107,49 @@ null
 </li>
 </ul>
 </div>
+<div class="sect2">
+<h3 id="_an_example">An Example</h3>
+<div class="paragraph">
+<p>We build a web server running Apache. Someone then checks that Apache <code>httpd</code> package is the correct version <code>2.4.25</code>, the <code>deployment</code> user is in the <code>www-data</code> group, there is an application directory at <code>/srv/www/app</code>, we check the <code>httpd</code> service is running, we can connect to the application at <code><a href="http://localhost/app" class="bare">http://localhost/app</a></code> and going to <code><a href="http://localhost/" class="bare">http://localhost/</a></code> gives a <code>404</code> error within 1 second.</p>
+</div>
+<div class="paragraph">
+<p>With Goss, the YAML configuration would look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">---
+package:
+  httpd:
+    installed: true
+    versions:
+    - 2.4.25
+user:
+  deployment:
+    exists: true
+    groups:
+    - deployment
+    - www-data
+file:
+  /srv/www/app:
+    exists: true
+    filetype: directory
+service:
+  httpd:
+    enabled: true
+    running: true
+http:
+  http://localhost/app:
+    status: 200
+    timeout: 1000
+  http://localhost:
+    status: 404
+    timeout: 1000</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That&#8217;s quite simple, easy to understand what is being validated and can be used to consistently validate all servers of that configuration.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -137,6 +180,28 @@ Goss won&#8217;t replace all of your checks, it doesn&#8217;t check things like 
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_http_health_endpoint">HTTP Health Endpoint</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It&#8217;s becoming increasingly common to expose health endpoints for applications and services. Google did this with their Borgmon monitoring system, <a href="https://prometheus.io/">Prometheus</a> also uses this scrape model and there are several libraries out there such as <a href="http://metrics.dropwizard.io/3.1.0/">Dropwizard Metrics</a> or <a href="http://blog.kristian.io/django-health-check/">Django Health Check</a> to name a few.</p>
+</div>
+<div class="paragraph">
+<p>Goss has a <code>serve</code> command that exposes a http endpoint with configurable output such as json. This makes it easy to create a simpe UI or utilise something like <a href="https://www.phpservermonitor.org/">PHP Server Monitor</a> to show the validation status of each piece of infrastructure.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_final_thoughts">Final Thoughts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I hope with that with some learning and experimentation you can see the value of validation testing your infrastructure and building validation into your monitoring systems. Goss is a young project and currently only supports Linux although it is active and open to contributions. You can help out by opening issues and pull requests.</p>
+</div>
+<div class="paragraph">
+<p>I&#8217;ll follow up with more in-depth posts Goss related posts in the future. Thanks for reading!</p>
 </div>
 </div>
 </div>
@@ -225,8 +290,8 @@ Goss won&#8217;t replace all of your checks, it doesn&#8217;t check things like 
         hljs.initHighlightingOnLoad();
       </script>
 
-    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/jquery.fitvids.js?v=1484110163670"></script>
-    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/index.js?v=1484110163670"></script>
+    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/jquery.fitvids.js?v=1484112599779"></script>
+    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/index.js?v=1484112599779"></script>
 
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
