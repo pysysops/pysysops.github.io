@@ -17,6 +17,43 @@ Well, a few things make goss awesome:
 * It's super fast - taking advantages of Go's concurrency model tests are executed and returned almost instantly.
 * It's easy to get started with - defining resources in YAML or JSON makes it easy for infrastructure teams who may have limited development experience to get to grips with.
 
+=== An Example
+We build a web server running Apache. Someone then checks that Apache `httpd` package is the correct version `2.4.25`, the `deployment` user is in the `www-data` group, there is an application directory at `/srv/www/app`, we check the `httpd` service is running, we can connect to the application at `http://localhost/app` and going to `http://localhost/` gives a `404` error within 1 second.
+
+With Goss, the YAML configuration would look like this:
+
+```yaml
+---
+package:
+  httpd:
+    installed: true
+    versions:
+    - 2.4.25
+user:
+  deployment:
+    exists: true
+    groups:
+    - deployment
+    - www-data
+file:
+  /srv/www/app:
+    exists: true
+    filetype: directory
+service: 
+  httpd:
+    enabled: true
+    running: true
+http:
+  http://localhost/app:
+    status: 200
+    timeout: 1000
+  http://localhost:
+    status: 404
+    timeout: 1000    
+```
+
+That's quite simple, easy to understand what is being validated and can be used to consistently validate all servers of that configuration.
+
 == Server Validation and Monitoring
 All this validation of files, processes, services, ports etc... sounds familiar. It's something that we quite often try to achieve with our monitoring tools like Nagios, Zabbix or Sensu.
 
@@ -28,4 +65,13 @@ Server validation can now become part of your monitoring pipeline ensuring that 
 
 WARNING: Goss won't replace all of your checks, it doesn't check things like HDD space, RAM usage or errors in log files. But it makes a sweet addition to server / service monitoring.
 
+== HTTP Health Endpoint
+It's becoming increasingly common to expose health endpoints for applications and services. Google did this with their Borgmon monitoring system, https://prometheus.io/[Prometheus] also uses this scrape model and there are several libraries out there such as http://metrics.dropwizard.io/3.1.0/[Dropwizard Metrics] or http://blog.kristian.io/django-health-check/[Django Health Check] to name a few. 
 
+Goss has a `serve` command that exposes a http endpoint with configurable output such as json. This makes it easy to create a simpe UI or utilise something like https://www.phpservermonitor.org/[PHP Server Monitor] to show the validation status of each piece of infrastructure.
+
+== Final Thoughts
+
+I hope with that with some learning and experimentation you can see the value of validation testing your infrastructure and building validation into your monitoring systems. Goss is a young project and currently only supports Linux although it is active and open to contributions. You can help out by opening issues and pull requests.
+
+I'll follow up with more in-depth posts Goss related posts in the future. Thanks for reading!
