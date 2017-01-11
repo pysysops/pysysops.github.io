@@ -26,6 +26,6 @@ image::https://cloud.githubusercontent.com/assets/1253072/18037748/76f65a32-6d83
 
 Server validation can now become part of your monitoring pipeline ensuring that any problems are identified quickly with a single monitoring check.
 
-NOTE: Goss won't replace all of your checks, it doesn't check things like diskspace, RAM usage or errors in log files. But it makes a sweet addition to server / service monitoring.
+WARNING: Goss won't replace all of your checks, it doesn't check things like HDD space, RAM usage or errors in log files. But it makes a sweet addition to server / service monitoring.
 
 
