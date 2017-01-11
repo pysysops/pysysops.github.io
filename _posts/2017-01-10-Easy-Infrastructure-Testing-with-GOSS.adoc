@@ -18,6 +18,12 @@ Well, a few things make goss awesome:
 * It's easy to get started with - defining resources in YAML or JSON makes it easy for infrastructure teams who may have limited development experience to get to grips with.
 
 == Server Validation and Monitoring
+All this validation of files, processes, services, ports etc... sounds familiar. It's something that we quite often try to achieve with our monitoring tools like Nagios, Zabbix or Sensu.
 
+With Goss we can create a single monitoring check for validation of a piece of infrastructure that may test many resources. Goss has outputs to make this really easy. The nagios_verbose output gives feedback on what is wrong:
+
+image::https://cloud.githubusercontent.com/assets/1253072/18037748/76f65a32-6d83-11e6-9aba-bceabb8430a3.png
+
+Server validation can now become part of your monitoring pipeline ensuring that any problems are identified quickly with a single monitoring check.
 
 
