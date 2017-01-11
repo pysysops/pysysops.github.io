@@ -1,6 +1,6 @@
 = Easy Infrastructure Testing with Goss
 :hp-tags: Configuration Management, Testing, Security, Monitoring, goss
-:hp-image: covers/cover-01.jpg
+:hp-image: /images/covers/cover-01.jpg
 
 
 In the world of infrastructure new servers, VMs, containers or applications are often manually validated by a human and some form of build document or checkbox exercise takes place. Even with configuration management, mistakes happen and humans miss things.
