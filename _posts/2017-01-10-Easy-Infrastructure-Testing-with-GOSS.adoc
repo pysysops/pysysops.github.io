@@ -7,6 +7,10 @@ Wouldn't it be great if there were an easy way to automatically validate new ser
 
 == What is Goss?
 
-https://github.com/aelsabbahy/goss[Goss] is a tool that let's you easily test and validate infrastructure. Like http://serverspec.org/[Serverspec] but without all the code. Goss allows you to define what a piece of infrastructure should look like with YAML or JSON. This is made even easier for us with the ability to auto add resources to the https://github.com/aelsabbahy/goss[Goss] configuration. 
+https://github.com/aelsabbahy/goss[Goss] is a tool that let's you easily test and validate infrastructure. Like http://serverspec.org/[Serverspec] but without all the code. Goss allows you to define what a piece of infrastructure should look like with YAML or JSON. This is made even easier for us with the ability to auto add resources to the Goss configuration.
+
+Goss allows you to validate many different resource types such as files, users, groups, packages, services and http connectivity. You can read the full https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#available-tests[Goss documentation].
+
+== 
 
 
