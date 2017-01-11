@@ -11,7 +11,7 @@
     "cover": "/images/index.jpg",
     "postsPerPage": "10",
     "googleAnalytics": "UA-90121848-1",
-    "disqus": "@pysysops"
+    "disqus": "pysysops"
   },
   "socialnetwork": {
     "email": "tim@birkett-bros-com",
