@@ -3,26 +3,28 @@
 :hp-image: /images/covers/cover-01.jpg
 
 
-In the world of infrastructure new servers, VMs, containers or applications are often manually validated by a human and some form of build document or checkbox exercise takes place. Even with configuration management, mistakes happen and humans miss things.
+In the world of infrastructure; new servers, VMs, containers or applications are often manually validated by a human. Some form of build document or checkbox exercise takes place to confirm that the piece of infrastructure is ready for use. Even with configuration management, mistakes happen and humans make mistakes (damn humans).
 
-Wouldn't it be great if there were an easy way to automatically validate new servers before they are live and we find the problems in production? Well, there is!
+Wouldn't it be great if there were an easy way to automatically validate new servers before they are live and we find the problems in production? Well, there is! Try https://github.com/aelsabbahy/goss[Goss].
 
 == What is Goss?
-https://github.com/aelsabbahy/goss[Goss] is a tool that let's you easily test and validate infrastructure. Like http://serverspec.org/[Serverspec] but without all the code. Goss allows you to define what a piece of infrastructure should look like with YAML or JSON. This is made even easier for us with the ability to auto add resources to the Goss configuration.
+https://github.com/aelsabbahy/goss[Goss] is a tool that let's you easily and quickly validate infrastructure. Like http://serverspec.org/[Serverspec] but without all the code. Goss allows you to define what a piece of infrastructure should look like with YAML or JSON. This is made even easier for us with the ability to auto add resources to the Goss configuration on the command line.
 
-Goss allows you to validate many different resource types such as files, users, groups, packages, services and http connectivity. You can read the full https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#available-tests[Goss documentation].
+Goss allows you to validate many different resource types such as files, users, groups, packages, services and http connectivity. You can read the full Goss documentation https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#available-tests[here].
 
 == Why Goss? 
-Well, a few things make goss awesome: 
+Well, a few things make goss an awesome tool for server validation: 
 
-* Written in Go - it's a self contained binary with no dependencies on other libraries or Ruby. 
-* It's super fast - taking advantages of Go's concurrency model tests are executed and returned almost instantly.
-* It's easy to get started with - defining resources in YAML or JSON makes it easy for infrastructure teams who may have limited development experience to get to grips with.
+* Written in Go - This means it's a self contained binary with no dependencies on other libraries or interpreters. 
+* It's super fast - Taking advantage of Go's concurrency model: tests are executed and returned almost instantly.
+* It's easy to get started with - Defining resources in YAML or JSON makes it easy for your entire team to get to grips with.
 
 === An Example
-We build a web server running Apache. Someone then checks that Apache `httpd` package is the correct version `2.4.25`, the `deployment` user is in the `www-data` group, there is an application directory at `/srv/www/app`, we check the `httpd` service is running, we can connect to the application at `http://localhost/app` and going to `http://localhost/` gives a `404` error within 1 second.
+We build a web server running Apache.
 
-With Goss, the YAML configuration would look like this:
+Before going live someone checks that the Apache `httpd` package is the correct version of `2.4.25`, the `deployment` user is in the `www-data` group and there is an application directory at `/srv/www/app`. They also check the `httpd` service is running, we can connect to the application at `http://localhost/app` and going to `http://localhost/` gives a `404` error page.
+
+To automate the above procedure with Goss, the YAML configuration would look like this:
 
 ```yaml
 ---
@@ -54,26 +56,31 @@ http:
     timeout: 1000    
 ```
 
-That's quite simple, easy to understand what is being validated and can be used to consistently validate all servers of that configuration.
+You can see clearly what is being validated and this goss.yaml file can be used to consistently validate all servers of the same configuration.
 
 == Server Validation and Monitoring
-All this validation of files, processes, services, ports etc... sounds familiar. It's something that we quite often try to achieve with our monitoring tools like Nagios, Zabbix or Sensu.
+All this validation of files, processes, services, ports and connectiovity sounds familiar. It's something that we quite often try to achieve with our monitoring tools like Nagios, Zabbix or Sensu.
 
-With Goss we can create a single monitoring check for validation of a piece of infrastructure that may test many resources. Goss has outputs to make this really easy. The nagios_verbose output gives feedback on what is wrong:
+With Goss we can create a single monitoring check that tests many resources at once. Goss has several different https://github.com/aelsabbahy/goss/#supported-output-formats[outputs]. The nagios_verbose output gives you out of the box testing compatible with Nagios or Sensu and gives Nagios long output explaining failures:
 
 image::https://cloud.githubusercontent.com/assets/1253072/18037748/76f65a32-6d83-11e6-9aba-bceabb8430a3.png[Goss - nagios_verbose output]
 
-Server validation can now become part of your monitoring pipeline ensuring that any problems are identified quickly with a single monitoring check.
+Server validation can now become part of your monitoring ecosystem ensuring that any problems are identified quickly with a single monitoring check.
 
 WARNING: Goss won't replace all of your checks, it doesn't check things like HDD space, RAM usage or errors in log files. But it makes a sweet addition to server / service monitoring.
 
 == HTTP Health Endpoint
-It's becoming increasingly common to expose health endpoints for applications and services. Google did this with their Borgmon monitoring system, https://prometheus.io/[Prometheus] also uses this scrape model and there are several libraries out there such as http://metrics.dropwizard.io/3.1.0/[Dropwizard Metrics] or http://blog.kristian.io/django-health-check/[Django Health Check] to name a few. 
+Many applications expose "health" endpoints for applications and services. 
 
-Goss has a `serve` command that exposes a http endpoint with configurable output such as json. This makes it easy to create a simpe UI or utilise something like https://www.phpservermonitor.org/[PHP Server Monitor] to show the validation status of each piece of infrastructure.
+Tools like Google's Borgmon monitoring system and https://prometheus.io/[Prometheus] use this HTTP(S) scrape or pull model to retrieve monitoring and metrics results from there services.
+
+Goss has a https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#serve-s---serve-a-health-endpoint[`serve` command] that exposes a http endpoint for scraping. You can then then use something like https://www.phpservermonitor.org/[PHP Server Monitor] to show the validation status of each piece of infrastructure.
+
+NOTE: If instrumeting your applications interests you, there's plenty of libraries to assist you. Check out: http://metrics.dropwizard.io/3.1.0/[Dropwizard Metrics] and http://blog.kristian.io/django-health-check/[Django Health Check]. 
 
 == Final Thoughts
+Hopefully you can see the value of validation testing your infrastructure and building validation into your monitoring systems.
 
-I hope with that with some learning and experimentation you can see the value of validation testing your infrastructure and building validation into your monitoring systems. Goss is a young project and currently only supports Linux although it is active and open to contributions. You can help out by opening issues and pull requests.
+Goss is a young project and currently only supports Linux but it's very active and open to contributions. You can help out by opening issues, discussing enhancements and submitting pull requests for review.
 
-I'll follow up with more in-depth posts Goss related posts in the future. Thanks for reading!
+I'll cover some advanced Goss usage in future posts. Thanks for reading!
