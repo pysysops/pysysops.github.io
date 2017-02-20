@@ -9,4 +9,8 @@ In this post we'll take a look at a new feature in the latest version of Goss an
 == Why test DNS? 
 DNS is easy right? It's just an IP address and a hostname. Easy... We've definitely never had an outage or failed to deploy a new application because of a DNS issue have we?
 
-DNS can get a little more interesting when you start chaining CNAMEs, have multiple A records for a hostname and introduce DNSSEC. PTR records which reverse map an IP to a hostname are aften used by various server applications for security purposes. If DNS is not in your control and another team forgets to add the records you need correctly you can end up wasting hours troubleshooting.
+DNS can get a little more interesting when you start chaining CNAMEs, have multiple A records for a hostname and introduce DNSSEC. PTR records which reverse map an IP to a hostname are aften used by various server applications for security purposes.
+
+If DNS out of your control and another team forgets to add the records you need correctly you can end up wasting hours troubleshooting why various software won't start up, clients fail to connect and you have SSL connection errors.
+
+Validation testing your DNS with Goss will solve ALL these problems. Okay, that's a lie. It can help you identify when something isn't right or when something is missing before deploying a new application. 
