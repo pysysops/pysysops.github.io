@@ -1,1 +1,4 @@
-# Testing DNS Infrastructure with Goss
+= Testing DNS Infrastructure with Goss
+:hp-tags: Goss, DNS, Testing, DevOps, Linux, Monitoring
+
+
