@@ -12,7 +12,7 @@
 
     <link rel="shortcut icon" href="http://www.pysysops.com/favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="//www.pysysops.com/themes/casper/assets/css/screen.css?v=1487593079061" />
+    <link rel="stylesheet" type="text/css" href="//www.pysysops.com/themes/casper/assets/css/screen.css?v=1487601057495" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
 
     <link rel="canonical" href="http://www.pysysops.com/2017/02/20/Testing-DNS-Infrastructure-with-Goss.html" />
@@ -85,7 +85,13 @@ null
 <p>DNS is easy right? It&#8217;s just an IP address and a hostname. Easy&#8230;&#8203; We&#8217;ve definitely never had an outage or failed to deploy a new application because of a DNS issue have we?</p>
 </div>
 <div class="paragraph">
-<p>DNS can get a little more interesting when you start chaining CNAMEs, have multiple A records for a hostname and introduce DNSSEC. PTR records which reverse map an IP to a hostname are aften used by various server applications for security purposes. If DNS is not in your control and another team forgets to add the records you need correctly you can end up wasting hours troubleshooting.</p>
+<p>DNS can get a little more interesting when you start chaining CNAMEs, have multiple A records for a hostname and introduce DNSSEC. PTR records which reverse map an IP to a hostname are aften used by various server applications for security purposes.</p>
+</div>
+<div class="paragraph">
+<p>If DNS out of your control and another team forgets to add the records you need correctly you can end up wasting hours troubleshooting why various software won&#8217;t start up, clients fail to connect and you have SSL connection errors.</p>
+</div>
+<div class="paragraph">
+<p>Validation testing your DNS with Goss will solve ALL these problems. Okay, that&#8217;s a lie. It can help you identify when something isn&#8217;t right or when something is missing before deploying a new application.</p>
 </div>
 </div>
 </div>
@@ -174,8 +180,8 @@ null
         hljs.initHighlightingOnLoad();
       </script>
 
-    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/jquery.fitvids.js?v=1487593079061"></script>
-    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/index.js?v=1487593079061"></script>
+    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/jquery.fitvids.js?v=1487601057495"></script>
+    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/index.js?v=1487601057495"></script>
 
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
