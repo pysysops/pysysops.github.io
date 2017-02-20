@@ -1,4 +1,3 @@
 = Testing DNS Infrastructure with Goss
 :hp-tags: Goss, DNS, Testing, DevOps, Linux, Monitoring
-
-
+:hp-image: images/covers/OFFLINE.jpg
