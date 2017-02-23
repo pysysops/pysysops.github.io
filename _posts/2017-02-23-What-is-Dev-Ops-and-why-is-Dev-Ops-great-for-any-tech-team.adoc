@@ -1,0 +1,2 @@
+= What is DevOps and why is DevOps great for any tech team?
+:hp-image: /images/covers/chat.gif
