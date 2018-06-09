@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Sat, 09 Jun 2018 21:29:48 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Easy Infrastructure Testing with Goss]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the world of infrastructure; new servers, VMs, containers or applications are often manually validated by a human. Some form of build document or checkbox exercise takes place to confirm that the piece of infrastructure is ready for use. Even with configuration management, mistakes happen and humans make mistakes (damn humans).</p>
+</div>
+<div class="paragraph">
+<p>Wouldn&#8217;t it be great if there were an easy way to automatically validate new servers before they are live and we find the problems in production? Well, there is! Try <a href="https://github.com/aelsabbahy/goss">Goss</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_is_goss">What is Goss?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://github.com/aelsabbahy/goss">Goss</a> is a tool that let&#8217;s you easily and quickly validate infrastructure. Like <a href="http://serverspec.org/">Serverspec</a> but without all the code. Goss allows you to define what a piece of infrastructure should look like with YAML or JSON. This is made even easier for us with the ability to auto add resources to the Goss configuration on the command line.</p>
+</div>
+<div class="paragraph">
+<p>Goss allows you to validate many different resource types such as files, users, groups, packages, services and http connectivity. You can read the full Goss documentation <a href="https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#available-tests">here</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_goss">Why Goss?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Well, a few things make goss an awesome tool for server validation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Written in Go - This means it&#8217;s a self contained binary with no dependencies on other libraries or interpreters.</p>
+</li>
+<li>
+<p>It&#8217;s super fast - Taking advantage of Go&#8217;s concurrency model: tests are executed and returned almost instantly.</p>
+</li>
+<li>
+<p>It&#8217;s easy to get started with - Defining resources in YAML or JSON makes it easy for your entire team to get to grips with.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_an_example">An Example</h3>
+<div class="paragraph">
+<p>We build a web server running Apache.</p>
+</div>
+<div class="paragraph">
+<p>Before going live someone checks that the Apache <code>httpd</code> package is the correct version of <code>2.4.25</code>, the <code>deployment</code> user is in the <code>www-data</code> group and there is an application directory at <code>/srv/www/app</code>. They also check the <code>httpd</code> service is running, we can connect to the application at <code><a href="http://localhost/app" class="bare">http://localhost/app</a></code> and going to <code><a href="http://localhost/" class="bare">http://localhost/</a></code> gives a <code>404</code> error page.</p>
+</div>
+<div class="paragraph">
+<p>To automate the above procedure with Goss, the YAML configuration would look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">---
+package:
+  httpd:
+    installed: true
+    versions:
+    - 2.4.25
+user:
+  deployment:
+    exists: true
+    groups:
+    - deployment
+    - www-data
+file:
+  /srv/www/app:
+    exists: true
+    filetype: directory
+service:
+  httpd:
+    enabled: true
+    running: true
+http:
+  http://localhost/app:
+    status: 200
+    timeout: 1000
+  http://localhost:
+    status: 404
+    timeout: 1000</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can see clearly what is being validated and this goss.yaml file can be used to consistently validate all servers of the same configuration.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_server_validation_and_monitoring">Server Validation and Monitoring</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All this validation of files, processes, services, ports and connectiovity sounds familiar. It&#8217;s something that we quite often try to achieve with our monitoring tools like Nagios, Zabbix or Sensu.</p>
+</div>
+<div class="paragraph">
+<p>With Goss we can create a single monitoring check that tests many resources at once. Goss has several different <a href="https://github.com/aelsabbahy/goss/#supported-output-formats">outputs</a>. The nagios_verbose output gives you out of the box testing compatible with Nagios or Sensu and gives Nagios long output explaining failures:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://cloud.githubusercontent.com/assets/1253072/18037748/76f65a32-6d83-11e6-9aba-bceabb8430a3.png" alt="Goss - nagios_verbose output">
+</div>
+</div>
+<div class="paragraph">
+<p>Server validation can now become part of your monitoring ecosystem ensuring that any problems are identified quickly with a single monitoring check.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Goss won&#8217;t replace all of your checks, it doesn&#8217;t check things like HDD space, RAM usage or errors in log files. But it makes a sweet addition to server / service monitoring.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_http_health_endpoint">HTTP Health Endpoint</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Many applications expose "health" endpoints for applications and services.</p>
+</div>
+<div class="paragraph">
+<p>Tools like Google&#8217;s Borgmon monitoring system and <a href="https://prometheus.io/">Prometheus</a> use this HTTP(S) scrape or pull model to retrieve monitoring and metrics results from there services.</p>
+</div>
+<div class="paragraph">
+<p>Goss has a <a href="https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#serve-s---serve-a-health-endpoint"><code>serve</code> command</a> that exposes a http endpoint for scraping. You can then then use something like <a href="https://www.phpservermonitor.org/">PHP Server Monitor</a> to show the validation status of each piece of infrastructure.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If instrumeting your applications interests you, there&#8217;s plenty of libraries to assist you. Check out: <a href="http://metrics.dropwizard.io/3.1.0/">Dropwizard Metrics</a> and <a href="http://blog.kristian.io/django-health-check/">Django Health Check</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_final_thoughts">Final Thoughts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Hopefully you can see the value of validation testing your infrastructure and building validation into your monitoring systems.</p>
+</div>
+<div class="paragraph">
+<p>Goss is a young project and currently only supports Linux but it&#8217;s very active and open to contributions. You can help out by opening issues, discussing enhancements and submitting pull requests for review.</p>
+</div>
+<div class="paragraph">
+<p>I&#8217;ll cover some advanced Goss usage in future posts. Thanks for reading!</p>
+</div>
+</div>
+</div>]]></description><link>http://www.pysysops.com/2017/01/10/Easy-Infrastructure-Testing-with-Goss.html</link><guid isPermaLink="true">http://www.pysysops.com/2017/01/10/Easy-Infrastructure-Testing-with-Goss.html</guid><category><![CDATA[Configuration Management]]></category><category><![CDATA[Testing]]></category><category><![CDATA[Security]]></category><category><![CDATA[Monitoring]]></category><category><![CDATA[goss]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Tue, 10 Jan 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Puppet - Common Anti-Patterns]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Over my years in the tech industry I&#8217;ve gained a lot of experience with Configuration Managemnt tools such as Puppet, Chef and Ansible. In this post I&#8217;d like to share with you my experiences, opinions and advice on using Puppet as a Configuration Management tool. Hopefully this helps some of you out there to beat Puppet into submission.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s just jump straight in with the patterns that aren&#8217;t too great.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_everything_in_manifests">Everything in Manifests</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In many beginners tutorials you get taught to put all your code in manifests such as <code>site.pp</code> or <code>nodes.pp</code>. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>node 'puppetclient1.mydomain.net' {
+  include httpd_class
+}
+
+node 'puppetclient2.mydomain.net' {
+  include nginx_class
+  file {'/opt/deployment_script':
+    ensure =&gt; 'file',
+    owner  =&gt; 'deploy',
+    group  =&gt; 'deploy',
+    mode   =&gt; '0750'
+  }
+}
+
+node default {
+  package { 'perl':
+    ensure =&gt; present
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is great when you&#8217;re just starting out with a few servers to manage. You think you get it. Then you add a few more servers, you start adding more node specific config and before you know it you&#8217;ve got 10'000 lines of hand-crafted artisanal Puppet code. This was common in the early days of Puppet use. It was how I started back with Puppet 0.24.</p>
+</div>
+<div class="paragraph">
+<p>Although, it&#8217;s not the best idea to manage your infrastructure in this way it&#8217;s actually a reasonably good way to very easily and simply bootstrap cloud instances. with separate manifests based on server type (<code>web.pp</code>, <code>app.pp</code>, <code>lb.pp</code> etc). These can than be applied using <a href="https://cloudinit.readthedocs.io/en/latest/">cloudinit</a> to create an immutable bootstrapped node.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_monolithic_code_modules_code_directory">Monolithic <code>modules</code> Directory</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Quite often I see repos where people have <code>puppet module install&#8217;d straight into the `modules</code> directory or they&#8217;ve downloaded a module and extracted it there. The whole repo including their own modules mixed in with upstream modules is then committed to source control.</p>
+</div>
+<div class="paragraph">
+<p>This pattern has a few problems:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>you don&#8217;t know what is a locally developed module and what is an upstream module</p>
+</li>
+<li>
+<p>there&#8217;s no way of easily seeing what versions of modules are deployed</p>
+</li>
+<li>
+<p>it adds a lot of extra code to your Puppet repository</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Although this way works and you know that your module versions are pinned, tools are out there that make it much easier to manage your Puppet modules such as <a href="http://librarian-puppet.com/">librarian-puppet</a> and <a href="https://github.com/puppetlabs/r10k">r10k</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuration_data_in_code">Configuration Data in Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When writing Puppet code it&#8217;s sometimes tempting to hard-code things like IP addresses or node specific things. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code># DNS Config
+class profile::base::dns{
+  $dns_servers = ['192.168.1.1', '192.168.1.2']
+  file { '/etc/resolv.conf':
+    ensure  =&gt; present,
+    owner   =&gt; 'root',
+    group   =&gt; 'root',
+    mode    =&gt; '0444',
+    content =&gt; template('etc/resolv.conf.erb')
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This works, but the code isn&#8217;t re-usable. If you deploy to a different network or DC are your DNS servers still the same?</p>
+</div>
+<div class="paragraph">
+<p>To improve re-usablility, change the variable to be a class parameter with an optional default value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code># DNS Config
+class profile::base::dns (
+  $dns_servers = ['8.8.8.8', '8.8.4.4']
+){
+  file { '/etc/resolv.conf':
+    ensure  =&gt; present,
+    owner   =&gt; 'root',
+    group   =&gt; 'root',
+    mode    =&gt; '0444',
+    content =&gt; template('etc/resolv.conf.erb')
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then you can specify environment (network, node, DC) specific configuration in Hiera:</p>
+</div>
+<div class="paragraph">
+<p>dc1.example.com.yaml:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>---
+profile::base::dns:
+  dns_servers:
+    - '192.168.1.1'
+    - '192.168.1.2'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>dc2.example.com.yaml:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>---
+profile::base::dns:
+  dns_servers:
+    - '10.10.0.1'
+    - '10.10.1.1'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you avoid multiple classes or writing <code>case</code> or <code>if {&#8230;&#8203;} else {&#8230;&#8203;}</code> logic in your class file.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_everything_in_separate_repos">Everything in Separate Repos</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the example above, I&#8217;ve mentioned a "profile" class. A common pattern when dealing with Puppet code is the <strong>Roles and Profiles Pattern</strong>. The idea is that you assign one "Role" per server and the role is made up of individual bite-sized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems.</p>
+</div>
+<div class="paragraph">
+<p>A common and problematic pattern I&#8217;ve seen is maintaining an SCM repo for roles, an SCM repo for profiles, an SCM repo for the "control repo" and a separate SCM repo for hieradata. This can then turn into multiple branches of each and before you know it you&#8217;re maintaining 12 versions of a diverging code base. It&#8217;s common to see this when people have followed some "best practice" blog post without fully thinking things through. You also often see this when developers created the code initially. They love git branches and complexity. Especially if trying to bring Gitflow to Puppet code.</p>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s my top tip when deciding how to organize your repos: KISS - Have no more than one repo for your products Puppet code. Multiple repos and branches leads to managing multiple very different code bases, different module versions in each environment, merge tasks, complex git fixing&#8230;&#8203; a nightmare. There is an awesome control-repo by the guys at Example42 here: <a href="https://github.com/example42/control-repo" class="bare">https://github.com/example42/control-repo</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_misuse_of_puppet_environments">Misuse of Puppet Environments</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>With the r10k tool it&#8217;s easy to manage environments dynamically with Git branches. You can then assign subsets of servers to use different environments (branches of Puppet code). This sounds great, we have applications deployed to different environments like test, dev, stage, uat or production. Cool! let&#8217;s create all those branches&#8230;&#8203; STOP!!</p>
+</div>
+<div class="paragraph">
+<p>Puppet environments are a powerful thing, but I don&#8217;t believe you should confuse Puppet environments with Application environments. You should aim to manage your infrastructure in a single Puppet environment: "production". If you arrange your hieradata hierarchy sensibly you can manage the differences in configuration in a single branch.</p>
+</div>
+<div class="paragraph">
+<p>Puppet branches should be used when you need to test big changes or new features out in a controlled way (of course you&#8217;re developing and testing on Vagrant). Create a branch like "new_feature", develop it locally testing it on Vagrant then test out the changes on a suitable piece of infrastructure by running <code>puppet apply --environment new_feature</code>. Don&#8217;t forget your security and perf testing at this point ;) if everything looks good, open a PR, get it reviewed, merged to production and delete the branch.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_closing_thoughts">Closing Thoughts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Most of the opinions I&#8217;ve formed are from being forced to work with some painful Puppet code setups and processes. My best advice to anyone developing their infrastructure code: Keep it simple, think about it before you go ahead, keep an open mind and don&#8217;t be afraid to change your mind or refactor when necessary.</p>
+</div>
+</div>
+</div>]]></description><link>http://www.pysysops.com/2016/11/10/1123-Puppet-Common-Anti-Patterns.html</link><guid isPermaLink="true">http://www.pysysops.com/2016/11/10/1123-Puppet-Common-Anti-Patterns.html</guid><category><![CDATA[Puppet]]></category><category><![CDATA[Automation]]></category><category><![CDATA[Configuration Management]]></category><category><![CDATA[Devops]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Thu, 10 Nov 2016 00:00:00 GMT</pubDate></item></channel></rss>
