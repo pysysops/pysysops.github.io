@@ -4,6 +4,8 @@
 
 Over my years in the tech industry I've gained a lot of experience with Configuration Managemnt tools such as Puppet, Chef and Ansible. In this post I'd like to share with you my experiences, opinions and advice on using Puppet as a Configuration Management tool. Hopefully this helps some of you out there to beat Puppet into submission.
 
+Let's just jump straight in with the patterns that aren't too great.
+
 == Everything in Manifests
 
 In many beginners tutorials you get taught to put all your code in manifests such as `site.pp` or `nodes.pp`. For example:
@@ -30,15 +32,19 @@ node default {
 }
 ```
 
-This is great when you're just starting out with a few servers to manage. You think you get it. Then you add a few more servers, you start adding more node specific config and before you know it you've got 10'000 lines of hand-crafted artisanal Puppet code. Much of which is probably duplicated. This was common in the early deys of Puppet use. It was how I started back with Puppet 0.24.
+This is great when you're just starting out with a few servers to manage. You think you get it. Then you add a few more servers, you start adding more node specific config and before you know it you've got 10'000 lines of hand-crafted artisanal Puppet code. This was common in the early days of Puppet use. It was how I started back with Puppet 0.24.
 
 Although, it's not the best idea to manage your infrastructure in this way it's actually a reasonably good way to very easily and simply bootstrap cloud instances. with separate manifests based on server type (`web.pp`, `app.pp`, `lb.pp` etc). These can than be applied using https://cloudinit.readthedocs.io/en/latest/[cloudinit] to create an immutable bootstrapped node.
 
 == Monolithic `modules` Directory
 
-Quite often I see repos where either people have `puppet module install`'d straight into the `modules` directory or they've downloaded a module and extracted it there. They then commit the whole repo including their own modules mixed in with upstream modules into source control.
+Quite often I see repos where people have `puppet module install`'d straight into the `modules` directory or they've downloaded a module and extracted it there. The whole repo including their own modules mixed in with upstream modules is then committed to source control.
 
-This pattern has a few problems, you don't know what is a locally developed module and what is an upstream module and there's no way of easily seeing what versions of modules are deployed. It also adds a lot of extra code to your Puppet repository.
+This pattern has a few problems: 
+
+. you don't know what is a locally developed module and what is an upstream module
+. there's no way of easily seeing what versions of modules are deployed
+. it adds a lot of extra code to your Puppet repository
 
 Although this way works and you know that your module versions are pinned, tools are out there that make it much easier to manage your Puppet modules such as http://librarian-puppet.com/[librarian-puppet] and https://github.com/puppetlabs/r10k[r10k].
 
@@ -77,7 +83,7 @@ class profile::base::dns (
   }
 }
 ```
-Then you can specify environment (network, node, DC) specific things in Hiera:
+Then you can specify environment (network, node, DC) specific configuration in Hiera:
 
 dc1.example.com.yaml:
 ```
@@ -100,15 +106,15 @@ Now you avoid multiple classes or writing `case` or `if {...} else {...}` logic 
 
 == Everything in Separate Repos
 
-As you can see above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**. The idea is that you assign one "Role" per server and the role is made up of individual bite-sized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems.
+In the example above, I've mentioned a "profile" class. A common pattern when dealing with Puppet code is the **Roles and Profiles Pattern**. The idea is that you assign one "Role" per server and the role is made up of individual bite-sized "Profiles". Roles and profiles are just you or your companies custom Puppet modules that make use of upstream modules or Puppet resources to configure systems.
 
 A common and problematic pattern I've seen is maintaining an SCM repo for roles, an SCM repo for profiles, an SCM repo for the "control repo" and a separate SCM repo for hieradata. This can then turn into multiple branches of each and before you know it you're maintaining 12 versions of a diverging code base. It's common to see this when people have followed some "best practice" blog post without fully thinking things through. You also often see this when developers created the code initially. They love git branches and complexity. Especially if trying to bring Gitflow to Puppet code.
 
-Here's my top tip when deciding how to organize your repos: KISS - Have no more than one repo for your Puppet code. Multiple repos and branches leads to managing multiple very different code bases, different module versions in each environment, merge tasks, complex git fixing... a nightmare. There is an awesome control-repo by the guys at Example42 here: https://github.com/example42/control-repo
+Here's my top tip when deciding how to organize your repos: KISS - Have no more than one repo for your products Puppet code. Multiple repos and branches leads to managing multiple very different code bases, different module versions in each environment, merge tasks, complex git fixing... a nightmare. There is an awesome control-repo by the guys at Example42 here: https://github.com/example42/control-repo
 
 == Misuse of Puppet Environments
 
-With the r10k tool, it's easy to manage environments dynamically with Git branches. You can then assign subsets of servers to different branches of Puppet code. This sounds great, we have applications deployed to different environments like test, dev, stage, uat or production. Cool! let's create all those branches... STOP!!
+With the r10k tool it's easy to manage environments dynamically with Git branches. You can then assign subsets of servers to use different environments (branches of Puppet code). This sounds great, we have applications deployed to different environments like test, dev, stage, uat or production. Cool! let's create all those branches... STOP!!
 
 Puppet environments are a powerful thing, but I don't believe you should confuse Puppet environments with Application environments. You should aim to manage your infrastructure in a single Puppet environment: "production". If you arrange your hieradata hierarchy sensibly you can manage the differences in configuration in a single branch.
 
