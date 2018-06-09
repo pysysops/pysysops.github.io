@@ -11,14 +11,47 @@
     "cover": "/images/index.jpg",
     "postsPerPage": "10",
     "googleAnalytics": "UA-90121848-1",
-    "disqus": "pysysops"
+    "disqus": "pysysops",
+    "logo": "",
+    "delay": "",
+    "blogPath": ""
   },
   "socialnetwork": {
     "email": "tim@birkett-bros-com",
-    "twitter": "https://twitter.com/pysysops",
-    "github": "pysysops"
+    "twitter": "",
+    "github": "pysysops",
+    "facebook": "",
+    "googleplus": "",
+    "instagram": "",
+    "pinterest": "",
+    "flickr": "",
+    "linkedin": "",
+    "stackoverflow": "",
+    "paypalme": "",
+    "opencollective": ""
   },
   "theme": {
     "name": "casper"
-  }
+  },
+  "urls": {
+    "site": "http://www.pysysops.com",
+    "hubpress": "http://www.pysysops.com",
+    "theme": "//www.pysysops.com/themes/casper",
+    "images": "http://www.pysysops.com/images"
+  },
+  "initialisationConfigComponent": {
+    "name": "initialise-configuration",
+    "computed": {},
+    "methods": {},
+    "staticRenderFns": [
+      null,
+      null,
+      null
+    ],
+    "_compiled": true,
+    "beforeCreate": [
+      null
+    ]
+  },
+  "navigation": []
 }
