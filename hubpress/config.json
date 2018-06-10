@@ -35,7 +35,7 @@
   },
   "urls": {
     "site": "http://www.pysysops.com",
-    "hubpress": "http://www.pysysops.com",
+    "hubpress": "https://www.pysysops.com",
     "theme": "//www.pysysops.com/themes/casper",
     "images": "http://www.pysysops.com/images"
   },
