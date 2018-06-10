@@ -1,6 +1,25 @@
 = Securing Jenkins Workspaces
-
 :hp-image: /images/covers/vault_door.png
-// :published_at: 2019-01-31
-// :hp-tags: HubPress, Blog, Open_Source,
-// :hp-alt-title: My English Title
+:hp-tags: Jenkins, CI, Security, Secrets
+
+Jenkins is an immensely powerful tool for building, packaging and deploying your software. It cans stand in as an ad-hoc task runner, an orchestrator when paired with Ansible, mCollective, salt or even just plain old SSH (or pssh). You can even replace your cron jobs with it to give some visibility into what tasks have run, when and by who or what.
+
+I've been using it for Jenkins most of my tech life and think that in terms of flexibility, automation and power it's one of the best tools to have in your box. There is one problem though, by default it isn't very secure.
+
+Even after following best practices on https://jenkins.io/doc/book/system-administration/security/[Securing Jenkins] it has amongst other things something which can be a security concern Workspaces, by default you have 3 options: 
+
+. they are readable (anonymously or by a group / specified users)
+. they are not readable
+. they are deleted / cleaned up after a build
+
+I generally stick to option 3 and clean the job workspace post build. This keeps build agents HDD space happy and reduces leaking secrets or sensitive information out. But there are times when it's necessary to keep files generated at build time in a long-lived workspace to be used again next time the job triggers. Some of these files might be sensitive but I also want the workspace readable for some things like logs.
+
+== Overview
+
+At various employers I've often setup automated internal CA's to handle issuing certificates and re-generating them on expiry. In recent years I've moved to using LetsEncrypt wherever possible. I've found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.
+
+Each time an instance provsions it requests some certificates, as storage is usually ephemeral LetsEncrypt will issue a new certificate to each instance. If you've ever tried the same thing, you'll find that you can hit LetsEncrypt limits pretty quickly.
+
+To solve this problem I created a Jenkins job to handle the certificate generation with the Certbot Docker container, build an rpm package containing the certificates and push the rpm up to our private yum repos. From there all instances can have the `cp-certs` package installed as part of there bootstrapping / initial provisioning.
+
+== The Problem
