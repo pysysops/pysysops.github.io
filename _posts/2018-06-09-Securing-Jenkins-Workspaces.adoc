@@ -71,13 +71,3 @@ rm -f $SECURE_DIR/secured_state.tgz && rm -rf sensitive files and dirs/
 At this point you'll have a workspace with only safe files in it. You can always apply a workspace cleanup after the archive / encryption has run to get rid of all files.
 
 Hopefully you find this helpful if you need to secure your workspace contents. Thanks for reading!
-
-
-
-
-
-
-
-
-
-
