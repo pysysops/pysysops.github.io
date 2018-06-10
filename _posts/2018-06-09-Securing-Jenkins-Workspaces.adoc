@@ -23,3 +23,61 @@ Each time an instance provsions it requests some certificates, as storage is usu
 To solve this problem I created a Jenkins job to handle the certificate generation with the Certbot Docker container, build an rpm package containing the certificates and push the rpm up to our private yum repos. From there all instances can have the `cp-certs` package installed as part of there bootstrapping / initial provisioning.
 
 == The Problem
+
+This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don't like the idea of these files sitting there in teh workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic...
+
+== The Solution
+
+Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There's nothing. I sat and thought about "What is the actual risk I'm trying to avoid?" and came up with:
+
+. protect from access vis the Jenkins UI
+. protect from user access on the file system
+
+It dawned on me that the solution was easier than I thought (damn brain getting in the way). If I move the relevant sensitive files out of the workspace, there's no longer a risk of someone borrowing them from the UI and if I encrypt / archive the files with a strong secret then they'll be reasonably secure on the file system.
+
+Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it's a reasonable attempt at making them secure.
+
+=== How do you do it?
+
+IMPORTANT: You'll need GPG installed on your Jenkins CI agents.
+
+First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable `SECURE_KEY` in this example.
+
+Add something like the following to your job as the first shell step:
+```
+SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
+
+if [[ -f "$SECURE_DIR/secured_state.tgz.gpg" ]]
+then
+  echo 'INFO: Restoring letsencrypt state'
+  gpg --yes --batch --passphrase=$SECURE_KEY $SECURE_DIR/secured_state.tgz.gpg
+  tar -xzf $SECURE_DIR/secured_state.tgz.gpg
+else
+  echo 'INFO: Creating secure state dir'
+  mkdir -m 700 -p $SECURE_DIR
+fi
+```
+
+As the last shell step or a postbuild script something like the following should work:
+```
+SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
+
+echo 'INFO: Updating secure state'
+tar -czf $SECURE_DIR/secured_state.tgz .
+gpg --yes --batch --passphrase=$SECURE_KEY -c $SECURE_DIR/secured_state.tgz
+rm -f $SECURE_DIR/secured_state.tgz && rm -rf sensitive files and dirs/
+```
+
+At this point you'll have a workspace with only safe files in it. You can always apply a workspace cleanup after the archive / encryption has run to get rid of all files.
+
+Hopefully you find this helpful if you need to secure your workspace contents. Thanks for reading!
+
+
+
+
+
+
+
+
+
+
