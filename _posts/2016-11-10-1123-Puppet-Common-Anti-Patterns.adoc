@@ -1,5 +1,6 @@
 = Puppet - Common Anti-Patterns
 :hp-tags: Puppet, Automation, Configuration Management, Devops
+:hp-image: /images/covers/branch_madness.jpeg
 :published_at: 2016-11-10 11:23
 
 Over my years in the tech industry I've gained a lot of experience with Configuration Managemnt tools such as Puppet, Chef and Ansible. In this post I'd like to share with you my experiences, opinions and advice on using Puppet as a Configuration Management tool. Hopefully this helps some of you out there to beat Puppet into submission.
