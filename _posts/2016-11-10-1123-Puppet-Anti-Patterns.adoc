@@ -1,4 +1,4 @@
-= Puppet - Common Anti-Patterns
+= Puppet Anti-Patterns
 :hp-tags: Puppet, Automation, Configuration Management, Devops
 :hp-image: /images/covers/branch_madness.jpeg
 :published_at: 2016-11-10 11:23
