@@ -2,46 +2,48 @@
 :hp-image: /images/covers/vault_door.png
 :hp-tags: Jenkins, CI, Security, Secrets
 
-Jenkins is an immensely powerful tool for building, packaging and deploying your software. It cans stand in as an ad-hoc task runner, an orchestrator when paired with Ansible, mCollective, salt or even just plain old SSH (or pssh). You can even replace your cron jobs with it to give some visibility into what tasks have run, when and by who or what.
+Jenkins is a powerful tool for building, packaging and deploying your software. It can stand in as an ad-hoc task runner, an orchestrator and replace your cron jobs to give some visibility into what tasks have run, when and by who or what.
 
-I've been using it for Jenkins most of my tech life and think that in terms of flexibility, automation and power it's one of the best tools to have in your box. There is one problem though, by default it isn't very secure.
+I've been using Jenkins for most of my tech life and think that in terms of flexibility, automation and power it's one of the best tools to have in your box. There is one problem I have with Jenkins, by default it isn't very secure.
 
-Even after following best practices on https://jenkins.io/doc/book/system-administration/security/[Securing Jenkins] it has amongst other things something which can be a security concern Workspaces, by default you have 3 options: 
+Even after following https://jenkins.io/doc/book/system-administration/security/[Securing Jenkins] it has amongst other things something which can be a security concern: Workspace access through the web UI.
+
+By default you have 3 options to control access to workspaces: 
 
 . they are readable (anonymously or by a group / specified users)
 . they are not readable
 . they are deleted / cleaned up after a build
 
-I generally stick to option 3 and clean the job workspace post build. This keeps build agents HDD space happy and reduces leaking secrets or sensitive information out. But there are times when it's necessary to keep files generated at build time in a long-lived workspace to be used again next time the job triggers. Some of these files might be sensitive but I also want the workspace readable for some things like logs.
+I generally stick to option 2 and 3, remove read access and clean the job workspace post build. This keeps build agents disk space happy and reduces leaking secrets or sensitive information out through logs or files in the workspace.
 
 == Overview
 
-At various employers I've often setup automated internal CA's to handle issuing certificates and re-generating them on expiry. In recent years I've moved to using LetsEncrypt wherever possible. I've found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.
+I've often setup automated internal CA's to handle issuing certificates and re-generating them on expiry. In recent years, I've moved to using LetsEncrypt wherever possible. I've found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.
 
-Each time an instance provsions it requests some certificates, as storage is usually ephemeral LetsEncrypt will issue a new certificate to each instance. If you've ever tried the same thing, you'll find that you can hit LetsEncrypt limits pretty quickly.
+Each time an instance is provisioned, it requests some certificates, as storage is usually not persistent LetsEncrypt will issue a new certificate to each instance. If you've ever tried the same thing, you'll find that you can hit LetsEncrypt limits pretty quickly.
 
 To solve this problem I created a Jenkins job to handle the certificate generation with the Certbot Docker container, build an rpm package containing the certificates and push the rpm up to our private yum repos. From there all instances can have the `cp-certs` package installed as part of there bootstrapping / initial provisioning.
 
 == The Problem
 
-This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don't like the idea of these files sitting there in teh workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic...
+This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don't like the idea of these files sitting there in the workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic...
 
 == The Solution
 
-Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There's nothing. I sat and thought about "What is the actual risk I'm trying to avoid?" and came up with:
+Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There's nothing. I sat and thought about "What is the actual risk I'm trying to reduce?" and came up with:
 
 . protect from access vis the Jenkins UI
 . protect from user access on the file system
 
 It dawned on me that the solution was easier than I thought (damn brain getting in the way). If I move the relevant sensitive files out of the workspace, there's no longer a risk of someone borrowing them from the UI and if I encrypt / archive the files with a strong secret then they'll be reasonably secure on the file system.
 
-Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it's a reasonable attempt at making them secure.
+Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it's a reasonable attempt at improving security.
 
 === How do you do it?
 
 IMPORTANT: You'll need GPG installed on your Jenkins CI agents.
 
-First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable `SECURE_KEY` in this example.
+First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable `SECURE_KEY` (in this example).
 
 Add something like the following to your job as the first shell step:
 ```
@@ -49,11 +51,11 @@ SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 
 if [[ -f "$SECURE_DIR/secured_state.tgz.gpg" ]]
 then
-  echo 'INFO: Restoring letsencrypt state'
+  echo 'INFO: Restoring secured workspace'
   gpg --yes --batch --passphrase=$SECURE_KEY $SECURE_DIR/secured_state.tgz.gpg
   tar -xzf $SECURE_DIR/secured_state.tgz.gpg
 else
-  echo 'INFO: Creating secure state dir'
+  echo 'INFO: Creating directory for secured workspace'
   mkdir -m 700 -p $SECURE_DIR
 fi
 ```
@@ -62,7 +64,7 @@ As the last shell step or a postbuild script something like the following should
 ```
 SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 
-echo 'INFO: Updating secure state'
+echo 'INFO: Creating secured workspace'
 tar -czf $SECURE_DIR/secured_state.tgz .
 gpg --yes --batch --passphrase=$SECURE_KEY -c $SECURE_DIR/secured_state.tgz
 rm -f $SECURE_DIR/secured_state.tgz && rm -rf sensitive files and dirs/
