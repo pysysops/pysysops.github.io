@@ -9,7 +9,7 @@
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="//www.pysysops.com/themes/casper/assets/built/screen.css?v=1528673129199" />
+    <link rel="stylesheet" type="text/css" href="//www.pysysops.com/themes/casper/assets/built/screen.css?v=1529776633905" />
 
     <link rel="canonical" href="http://www.pysysops.com/2018/06/09/Securing-Jenkins-Workspaces.html" />
     <meta name="referrer" content="origin" />
@@ -17,7 +17,7 @@
     <meta property="og:site_name" content="Tim Birkett " />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="Securing Jenkins Workspaces" />
-    <meta property="og:description" content="Jenkins is an immensely powerful tool for building, packaging and deploying your software. It cans stand in as an ad-hoc task runner, an orchestrator when paired with Ansible, mCollective, salt or even just plain old SSH (or pssh). You can even replace your cron jobs with it to give some" />
+    <meta property="og:description" content="Jenkins is a powerful tool for building, packaging and deploying your software. It can stand in as an ad-hoc task runner, an orchestrator and replace your cron jobs to give some visibility into what tasks have run, when and by who or what. I&amp;#8217;ve been using Jenkins for" />
     <meta property="og:url" content="http://www.pysysops.com/2018/06/09/Securing-Jenkins-Workspaces.html" />
     <meta property="og:image" content="/images/covers/vault_door.png" />
     <meta property="article:published_time" content="2018-06-09T00:00:00.000Z" />
@@ -28,7 +28,7 @@
     
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Securing Jenkins Workspaces" />
-    <meta name="twitter:description" content="Jenkins is an immensely powerful tool for building, packaging and deploying your software. It cans stand in as an ad-hoc task runner, an orchestrator when paired with Ansible, mCollective, salt or even just plain old SSH (or pssh). You can even replace your cron jobs with it to give some" />
+    <meta name="twitter:description" content="Jenkins is a powerful tool for building, packaging and deploying your software. It can stand in as an ad-hoc task runner, an orchestrator and replace your cron jobs to give some visibility into what tasks have run, when and by who or what. I&amp;#8217;ve been using Jenkins for" />
     <meta name="twitter:url" content="http://www.pysysops.com/2018/06/09/Securing-Jenkins-Workspaces.html" />
     <meta name="twitter:image:src" content="/images/covers/vault_door.png" />
     
@@ -49,7 +49,7 @@
     "datePublished": "2018-06-09T00:00:00.000Z",
     "image": "/images/covers/vault_door.png",
     "keywords": "Jenkins, CI, Security, Secrets",
-    "description": "Jenkins is an immensely powerful tool for building, packaging and deploying your software. It cans stand in as an ad-hoc task runner, an orchestrator when paired with Ansible, mCollective, salt or even just plain old SSH (or pssh). You can even replace your cron jobs with it to give some"
+    "description": "Jenkins is a powerful tool for building, packaging and deploying your software. It can stand in as an ad-hoc task runner, an orchestrator and replace your cron jobs to give some visibility into what tasks have run, when and by who or what. I&amp;#8217;ve been using Jenkins for"
 }
     </script>
 
@@ -109,13 +109,16 @@
                 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Jenkins is an immensely powerful tool for building, packaging and deploying your software. It cans stand in as an ad-hoc task runner, an orchestrator when paired with Ansible, mCollective, salt or even just plain old SSH (or pssh). You can even replace your cron jobs with it to give some visibility into what tasks have run, when and by who or what.</p>
+<p>Jenkins is a powerful tool for building, packaging and deploying your software. It can stand in as an ad-hoc task runner, an orchestrator and replace your cron jobs to give some visibility into what tasks have run, when and by who or what.</p>
 </div>
 <div class="paragraph">
-<p>I&#8217;ve been using it for Jenkins most of my tech life and think that in terms of flexibility, automation and power it&#8217;s one of the best tools to have in your box. There is one problem though, by default it isn&#8217;t very secure.</p>
+<p>I&#8217;ve been using Jenkins for most of my tech life and think that in terms of flexibility, automation and power it&#8217;s one of the best tools to have in your box. There is one problem I have with Jenkins, by default it isn&#8217;t very secure.</p>
 </div>
 <div class="paragraph">
-<p>Even after following best practices on <a href="https://jenkins.io/doc/book/system-administration/security/">Securing Jenkins</a> it has amongst other things something which can be a security concern Workspaces, by default you have 3 options:</p>
+<p>Even after following <a href="https://jenkins.io/doc/book/system-administration/security/">Securing Jenkins</a> it has amongst other things something which can be a security concern: Workspace access through the web UI.</p>
+</div>
+<div class="paragraph">
+<p>By default you have 3 options to control access to workspaces:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -131,7 +134,7 @@
 </ol>
 </div>
 <div class="paragraph">
-<p>I generally stick to option 3 and clean the job workspace post build. This keeps build agents HDD space happy and reduces leaking secrets or sensitive information out. But there are times when it&#8217;s necessary to keep files generated at build time in a long-lived workspace to be used again next time the job triggers. Some of these files might be sensitive but I also want the workspace readable for some things like logs.</p>
+<p>I generally stick to option 2 and 3, remove read access and clean the job workspace post build. This keeps build agents disk space happy and reduces leaking secrets or sensitive information out through logs or files in the workspace.</p>
 </div>
 </div>
 </div>
@@ -139,10 +142,10 @@
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>At various employers I&#8217;ve often setup automated internal CA&#8217;s to handle issuing certificates and re-generating them on expiry. In recent years I&#8217;ve moved to using LetsEncrypt wherever possible. I&#8217;ve found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.</p>
+<p>I&#8217;ve often setup automated internal CA&#8217;s to handle issuing certificates and re-generating them on expiry. In recent years, I&#8217;ve moved to using LetsEncrypt wherever possible. I&#8217;ve found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.</p>
 </div>
 <div class="paragraph">
-<p>Each time an instance provsions it requests some certificates, as storage is usually ephemeral LetsEncrypt will issue a new certificate to each instance. If you&#8217;ve ever tried the same thing, you&#8217;ll find that you can hit LetsEncrypt limits pretty quickly.</p>
+<p>Each time an instance is provisioned, it requests some certificates, as storage is usually not persistent LetsEncrypt will issue a new certificate to each instance. If you&#8217;ve ever tried the same thing, you&#8217;ll find that you can hit LetsEncrypt limits pretty quickly.</p>
 </div>
 <div class="paragraph">
 <p>To solve this problem I created a Jenkins job to handle the certificate generation with the Certbot Docker container, build an rpm package containing the certificates and push the rpm up to our private yum repos. From there all instances can have the <code>cp-certs</code> package installed as part of there bootstrapping / initial provisioning.</p>
@@ -153,7 +156,7 @@
 <h2 id="_the_problem">The Problem</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don&#8217;t like the idea of these files sitting there in teh workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic&#8230;&#8203;</p>
+<p>This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don&#8217;t like the idea of these files sitting there in the workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic&#8230;&#8203;</p>
 </div>
 </div>
 </div>
@@ -161,7 +164,7 @@
 <h2 id="_the_solution">The Solution</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There&#8217;s nothing. I sat and thought about "What is the actual risk I&#8217;m trying to avoid?" and came up with:</p>
+<p>Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There&#8217;s nothing. I sat and thought about "What is the actual risk I&#8217;m trying to reduce?" and came up with:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -177,7 +180,7 @@
 <p>It dawned on me that the solution was easier than I thought (damn brain getting in the way). If I move the relevant sensitive files out of the workspace, there&#8217;s no longer a risk of someone borrowing them from the UI and if I encrypt / archive the files with a strong secret then they&#8217;ll be reasonably secure on the file system.</p>
 </div>
 <div class="paragraph">
-<p>Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it&#8217;s a reasonable attempt at making them secure.</p>
+<p>Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it&#8217;s a reasonable attempt at improving security.</p>
 </div>
 <div class="sect2">
 <h3 id="_how_do_you_do_it">How do you do it?</h3>
@@ -194,7 +197,7 @@ You&#8217;ll need GPG installed on your Jenkins CI agents.
 </table>
 </div>
 <div class="paragraph">
-<p>First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable <code>SECURE_KEY</code> in this example.</p>
+<p>First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable <code>SECURE_KEY</code> (in this example).</p>
 </div>
 <div class="paragraph">
 <p>Add something like the following to your job as the first shell step:</p>
@@ -205,11 +208,11 @@ You&#8217;ll need GPG installed on your Jenkins CI agents.
 
 if [[ -f "$SECURE_DIR/secured_state.tgz.gpg" ]]
 then
-  echo 'INFO: Restoring letsencrypt state'
+  echo 'INFO: Restoring secured workspace'
   gpg --yes --batch --passphrase=$SECURE_KEY $SECURE_DIR/secured_state.tgz.gpg
   tar -xzf $SECURE_DIR/secured_state.tgz.gpg
 else
-  echo 'INFO: Creating secure state dir'
+  echo 'INFO: Creating directory for secured workspace'
   mkdir -m 700 -p $SECURE_DIR
 fi</code></pre>
 </div>
@@ -221,7 +224,7 @@ fi</code></pre>
 <div class="content">
 <pre class="highlight"><code>SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 
-echo 'INFO: Updating secure state'
+echo 'INFO: Creating secured workspace'
 tar -czf $SECURE_DIR/secured_state.tgz .
 gpg --yes --batch --passphrase=$SECURE_KEY -c $SECURE_DIR/secured_state.tgz
 rm -f $SECURE_DIR/secured_state.tgz &amp;&amp; rm -rf sensitive files and dirs/</code></pre>
@@ -343,8 +346,8 @@ rm -f $SECURE_DIR/secured_state.tgz &amp;&amp; rm -rf sensitive files and dirs/<
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous">
     </script>
-    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/jquery.fitvids.js?v=1528673129199"></script>
-
+    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/jquery.fitvids.js?v=1529776633905"></script>
+    <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script>
 
     <script>
 
