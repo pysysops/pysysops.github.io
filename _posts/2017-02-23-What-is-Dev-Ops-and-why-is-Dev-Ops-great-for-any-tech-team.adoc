@@ -2,19 +2,20 @@
 :hp-image: /images/covers/debate.gif
 :hp-tags: DevOps, Thoughts, Management
 
-I get asked this question A LOT. By recruiters, by interviewers, by devs, by ops and by myself. It’s a question that many have tried to answer. One that usually ends up with a post post listing the things that DevOps is not. So, what is it?
+I get asked this question A LOT. By recruiters, by interviewers, by devs, by ops and by myself. It’s a question that many have tried to answer. One that usually ends up with a blog post listing the things that DevOps is not. So, what is it?
 
 In one sentence DevOps is: An opinion. There’s so many blog posts and in general so much bullshit flying around when it comes to DevOps that what it is depends on who you ask. Since it's inception DevOps has been a point of contention and argument amongst eveyone in tech.
  
 == What is my opinion on the meaning of DevOps?
 
-The more i practice and preach the adoption of DevOps principles, the more I realise I've been working the DevOps way since starting my journey with tech about 8 years ago.
+The more i practice and preach the adoption of DevOps principles, the more I realise I've been working the DevOps way since starting my journey with tech about 10 years ago.
 
 I've come to form a set of ideas or guiding principles around DevOps based on my own experiences and the influence of others.  
 
 == What are these principles of DevOps?
 
 Similar to the http://agilemanifesto.org/[Agile manifesto]. I have reduced my opinions down to a small set of core DevOps values:
+
 
 
 
