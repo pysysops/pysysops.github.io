@@ -12,7 +12,7 @@ The more i practice and preach the adoption of DevOps principles, the more I rea
 
 I've come to form a set of ideas or guiding principles around DevOps based on my own experiences and the influence of others.  
 
-== What are these principles of DevOps?
+== What are these "principles" of DevOps?
 
 Similar to the http://agilemanifesto.org/[Agile manifesto]. I have reduced my opinions down to a small set of core DevOps values:
 
