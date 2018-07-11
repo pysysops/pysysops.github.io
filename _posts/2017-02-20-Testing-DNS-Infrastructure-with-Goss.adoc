@@ -7,16 +7,18 @@ In a previous post we got an introduction to http://www.pysysops.com/2017/01/10/
 In this post we'll take a look at a feature I added to http://goss.rocks[Goss] a while ago. Enhanced DNS validation.
 
 == Why test DNS? 
-DNS is easy right? It's just an IP address and a hostname. Easy... We've definitely never had an outage or failed to deploy a new application because of a DNS issue have we?
+DNS is easy right?! It's just an IP address and a hostname. Easy... We've definitely never had an outage or failed to deploy a new application because of a DNS issue have we?
 
-DNS can get a little more interesting when you start chaining CNAMEs, have multiple A records for a hostname and introduce DNSSEC. PTR records which reverse map an IP to a hostname are aften used by various server applications for security purposes.
+DNS can get a little more interesting when you start chaining CNAMEs, have multiple A records for a hostname and introduce DNSSEC.
+
+PTR records which reverse map an IP to a hostname are often used by various server applications for security purposes https://community.oracle.com/message/6415013[(Java + SSL)].
 
 If DNS configuration is out of your control and another team forgets to add the records you need correctly you can end up wasting hours troubleshooting why various applications won't start up, clients fail to connect and you have SSL connection errors.
 
-Testing your DNS with Goss will solve ALL these problems. Okay, that's a lie. It can help you identify when DNS records aren't quite right, have changed, or are missing before deploying a new application.
+*Testing your DNS with Goss will solve ALL these problems!* Okay, that's a lie. It can however help you identify when DNS records aren't quite right, have changed, or are missing before deploying a new application.
 
 == What can Goss test?
-Goas can test the following DNS record types:
+Goss can validate that any of the following record types are resolveable and can validate the values of the records.
 
 * A
 * AAAA
@@ -27,3 +29,61 @@ Goas can test the following DNS record types:
 * PTR
 * SRV
 * TXT
+
+== How do I test DNS records?
+
+Here are a few examples of DNS record tests:
+```
+dns:
+  # Validate a CAA record
+  CAA:dnstest.io:
+    resolvable: true
+    addrs:
+    - 0 issue comodoca.com
+    - 0 issue letsencrypt.org
+    - 0 issuewild ;
+    timeout: 2000
+    server: 8.8.8.8
+    
+  # Validate a CNAME record
+  CNAME:dnstest.github.io:
+    resolvable: true
+    server: 8.8.8.8
+    addrs:
+    - "github.map.fastly.net."
+
+  # Validate a PTR record
+  PTR:8.8.8.8:
+    resolvable: true
+    server: 8.8.8.8
+    addrs:
+    - "google-public-dns-a.google.com."
+
+  # Validate and SRV record
+  SRV:_https._tcp.dnstest.io:
+    resolvable: true
+    server: 8.8.8.8
+    addrs:
+    - "0 5 443 a.dnstest.io."
+    - "10 10 443 b.dnstest.io."
+    
+  # Validate an MX record
+  MX:dnstest.io:
+    resolvable: true
+    addrs:
+    - 10 b.dnstest.io.
+    - 5 a.dnstest.io.
+    timeout: 2000
+    server: 8.8.8.8
+```
+
+The above examples will query Google's public DNS server: `8.8.8.8` for results. You can remove the `server` parameter which will result in the system DNS resolver being used.
+
+Combining this with the https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#example-4[nagios] output and creating a monitoring check from it could be helpful in identifying future issues or alerting when a record might have been "cleaned up".
+
+
+
+
+
+
+
