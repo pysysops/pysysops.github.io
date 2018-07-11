@@ -1,16 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Sat, 23 Jun 2018 17:59:00 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Securing Jenkins Workspaces]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Wed, 11 Jul 2018 12:54:07 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Securing Jenkins Workspaces]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Jenkins is a powerful tool for building, packaging and deploying your software. It can stand in as an ad-hoc task runner, an orchestrator and replace your cron jobs to give some visibility into what tasks have run, when and by who or what.</p>
+<p>Jenkins is an immensely powerful tool for building, packaging and deploying your software. It cans stand in as an ad-hoc task runner, an orchestrator when paired with Ansible, mCollective, salt or even just plain old SSH (or pssh). You can even replace your cron jobs with it to give some visibility into what tasks have run, when and by who or what.</p>
 </div>
 <div class="paragraph">
-<p>I&#8217;ve been using Jenkins for most of my tech life and think that in terms of flexibility, automation and power it&#8217;s one of the best tools to have in your box. There is one problem I have with Jenkins, by default it isn&#8217;t very secure.</p>
+<p>I&#8217;ve been using it for Jenkins most of my tech life and think that in terms of flexibility, automation and power it&#8217;s one of the best tools to have in your box. There is one problem though, by default it isn&#8217;t very secure.</p>
 </div>
 <div class="paragraph">
-<p>Even after following <a href="https://jenkins.io/doc/book/system-administration/security/">Securing Jenkins</a> it has amongst other things something which can be a security concern: Workspace access through the web UI.</p>
-</div>
-<div class="paragraph">
-<p>By default you have 3 options to control access to workspaces:</p>
+<p>Even after following best practices on <a href="https://jenkins.io/doc/book/system-administration/security/">Securing Jenkins</a> it has amongst other things something which can be a security concern Workspaces, by default you have 3 options:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -26,7 +23,7 @@
 </ol>
 </div>
 <div class="paragraph">
-<p>I generally stick to option 2 and 3, remove read access and clean the job workspace post build. This keeps build agents disk space happy and reduces leaking secrets or sensitive information out through logs or files in the workspace.</p>
+<p>I generally stick to option 3 and clean the job workspace post build. This keeps build agents HDD space happy and reduces leaking secrets or sensitive information out. But there are times when it&#8217;s necessary to keep files generated at build time in a long-lived workspace to be used again next time the job triggers. Some of these files might be sensitive but I also want the workspace readable for some things like logs.</p>
 </div>
 </div>
 </div>
@@ -34,10 +31,10 @@
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>I&#8217;ve often setup automated internal CA&#8217;s to handle issuing certificates and re-generating them on expiry. In recent years, I&#8217;ve moved to using LetsEncrypt wherever possible. I&#8217;ve found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.</p>
+<p>At various employers I&#8217;ve often setup automated internal CA&#8217;s to handle issuing certificates and re-generating them on expiry. In recent years I&#8217;ve moved to using LetsEncrypt wherever possible. I&#8217;ve found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.</p>
 </div>
 <div class="paragraph">
-<p>Each time an instance is provisioned, it requests some certificates, as storage is usually not persistent LetsEncrypt will issue a new certificate to each instance. If you&#8217;ve ever tried the same thing, you&#8217;ll find that you can hit LetsEncrypt limits pretty quickly.</p>
+<p>Each time an instance provsions it requests some certificates, as storage is usually ephemeral LetsEncrypt will issue a new certificate to each instance. If you&#8217;ve ever tried the same thing, you&#8217;ll find that you can hit LetsEncrypt limits pretty quickly.</p>
 </div>
 <div class="paragraph">
 <p>To solve this problem I created a Jenkins job to handle the certificate generation with the Certbot Docker container, build an rpm package containing the certificates and push the rpm up to our private yum repos. From there all instances can have the <code>cp-certs</code> package installed as part of there bootstrapping / initial provisioning.</p>
@@ -48,7 +45,7 @@
 <h2 id="_the_problem">The Problem</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don&#8217;t like the idea of these files sitting there in the workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic&#8230;&#8203;</p>
+<p>This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don&#8217;t like the idea of these files sitting there in teh workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic&#8230;&#8203;</p>
 </div>
 </div>
 </div>
@@ -56,7 +53,7 @@
 <h2 id="_the_solution">The Solution</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There&#8217;s nothing. I sat and thought about "What is the actual risk I&#8217;m trying to reduce?" and came up with:</p>
+<p>Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There&#8217;s nothing. I sat and thought about "What is the actual risk I&#8217;m trying to avoid?" and came up with:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -72,7 +69,7 @@
 <p>It dawned on me that the solution was easier than I thought (damn brain getting in the way). If I move the relevant sensitive files out of the workspace, there&#8217;s no longer a risk of someone borrowing them from the UI and if I encrypt / archive the files with a strong secret then they&#8217;ll be reasonably secure on the file system.</p>
 </div>
 <div class="paragraph">
-<p>Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it&#8217;s a reasonable attempt at improving security.</p>
+<p>Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it&#8217;s a reasonable attempt at making them secure.</p>
 </div>
 <div class="sect2">
 <h3 id="_how_do_you_do_it">How do you do it?</h3>
@@ -89,7 +86,7 @@ You&#8217;ll need GPG installed on your Jenkins CI agents.
 </table>
 </div>
 <div class="paragraph">
-<p>First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable <code>SECURE_KEY</code> (in this example).</p>
+<p>First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable <code>SECURE_KEY</code> in this example.</p>
 </div>
 <div class="paragraph">
 <p>Add something like the following to your job as the first shell step:</p>
@@ -100,11 +97,11 @@ You&#8217;ll need GPG installed on your Jenkins CI agents.
 
 if [[ -f "$SECURE_DIR/secured_state.tgz.gpg" ]]
 then
-  echo 'INFO: Restoring secured workspace'
+  echo 'INFO: Restoring letsencrypt state'
   gpg --yes --batch --passphrase=$SECURE_KEY $SECURE_DIR/secured_state.tgz.gpg
   tar -xzf $SECURE_DIR/secured_state.tgz.gpg
 else
-  echo 'INFO: Creating directory for secured workspace'
+  echo 'INFO: Creating secure state dir'
   mkdir -m 700 -p $SECURE_DIR
 fi</code></pre>
 </div>
@@ -116,7 +113,7 @@ fi</code></pre>
 <div class="content">
 <pre class="highlight"><code>SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 
-echo 'INFO: Creating secured workspace'
+echo 'INFO: Updating secure state'
 tar -czf $SECURE_DIR/secured_state.tgz .
 gpg --yes --batch --passphrase=$SECURE_KEY -c $SECURE_DIR/secured_state.tgz
 rm -f $SECURE_DIR/secured_state.tgz &amp;&amp; rm -rf sensitive files and dirs/</code></pre>
@@ -130,7 +127,134 @@ rm -f $SECURE_DIR/secured_state.tgz &amp;&amp; rm -rf sensitive files and dirs/<
 </div>
 </div>
 </div>
-</div>]]></description><link>http://www.pysysops.com/2018/06/09/Securing-Jenkins-Workspaces.html</link><guid isPermaLink="true">http://www.pysysops.com/2018/06/09/Securing-Jenkins-Workspaces.html</guid><category><![CDATA[Jenkins]]></category><category><![CDATA[CI]]></category><category><![CDATA[Security]]></category><category><![CDATA[Secrets]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Sat, 09 Jun 2018 00:00:00 GMT</pubDate></item><item><title><![CDATA[Easy Infrastructure Testing with Goss]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://www.pysysops.com/2018/06/09/Securing-Jenkins-Workspaces.html</link><guid isPermaLink="true">http://www.pysysops.com/2018/06/09/Securing-Jenkins-Workspaces.html</guid><category><![CDATA[Jenkins]]></category><category><![CDATA[CI]]></category><category><![CDATA[Security]]></category><category><![CDATA[Secrets]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Sat, 09 Jun 2018 00:00:00 GMT</pubDate></item><item><title><![CDATA[Testing DNS Infrastructure with Goss]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In a previous post we got an introduction to <a href="http://www.pysysops.com/2017/01/10/Easy-Infrastructure-Testing-with-Goss.html">"Easy Infrastructure Testing with Goss"</a>.</p>
+</div>
+<div class="paragraph">
+<p>In this post we&#8217;ll take a look at a feature I added to <a href="http://goss.rocks">Goss</a> a while ago. Enhanced DNS validation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_test_dns">Why test DNS?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>DNS is easy right?! It&#8217;s just an IP address and a hostname. Easy&#8230;&#8203; We&#8217;ve definitely never had an outage or failed to deploy a new application because of a DNS issue have we?</p>
+</div>
+<div class="paragraph">
+<p>DNS can get a little more interesting when you start chaining CNAMEs, have multiple A records for a hostname and introduce DNSSEC.</p>
+</div>
+<div class="paragraph">
+<p>PTR records which reverse map an IP to a hostname are often used by various server applications for security purposes <a href="https://community.oracle.com/message/6415013">(Java + SSL)</a>.</p>
+</div>
+<div class="paragraph">
+<p>If DNS configuration is out of your control and another team forgets to add the records you need correctly you can end up wasting hours troubleshooting why various applications won&#8217;t start up, clients fail to connect and you have SSL connection errors.</p>
+</div>
+<div class="paragraph">
+<p><strong>Testing your DNS with Goss will solve ALL these problems!</strong> Okay, that&#8217;s a lie. It can however help you identify when DNS records aren&#8217;t quite right, have changed, or are missing before deploying a new application.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_can_goss_test">What can Goss test?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Goss can validate that any of the following record types are resolveable and can validate the values of the records.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A</p>
+</li>
+<li>
+<p>AAAA</p>
+</li>
+<li>
+<p>CAA</p>
+</li>
+<li>
+<p>CNAME</p>
+</li>
+<li>
+<p>MX</p>
+</li>
+<li>
+<p>NS</p>
+</li>
+<li>
+<p>PTR</p>
+</li>
+<li>
+<p>SRV</p>
+</li>
+<li>
+<p>TXT</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_do_i_test_dns_records">How do I test DNS records?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here are a few examples of DNS record tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>dns:
+  # Validate a CAA record
+  CAA:dnstest.io:
+    resolvable: true
+    addrs:
+    - 0 issue comodoca.com
+    - 0 issue letsencrypt.org
+    - 0 issuewild ;
+    timeout: 2000
+    server: 8.8.8.8
+
+  # Validate a CNAME record
+  CNAME:dnstest.github.io:
+    resolvable: true
+    server: 8.8.8.8
+    addrs:
+    - "github.map.fastly.net."
+
+  # Validate a PTR record
+  PTR:8.8.8.8:
+    resolvable: true
+    server: 8.8.8.8
+    addrs:
+    - "google-public-dns-a.google.com."
+
+  # Validate and SRV record
+  SRV:_https._tcp.dnstest.io:
+    resolvable: true
+    server: 8.8.8.8
+    addrs:
+    - "0 5 443 a.dnstest.io."
+    - "10 10 443 b.dnstest.io."
+
+  # Validate an MX record
+  MX:dnstest.io:
+    resolvable: true
+    addrs:
+    - 10 b.dnstest.io.
+    - 5 a.dnstest.io.
+    timeout: 2000
+    server: 8.8.8.8</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above examples will query Google&#8217;s public DNS server: <code>8.8.8.8</code> for results. You can remove the <code>server</code> parameter which will result in the system DNS resolver being used.</p>
+</div>
+<div class="paragraph">
+<p>Combining this with the <a href="https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#example-4">nagios</a> output and creating a monitoring check from it could be helpful in identifying future issues or alerting when a record might have been "cleaned up".</p>
+</div>
+</div>
+</div>]]></description><link>http://www.pysysops.com/2017/02/20/Testing-DNS-Infrastructure-with-Goss.html</link><guid isPermaLink="true">http://www.pysysops.com/2017/02/20/Testing-DNS-Infrastructure-with-Goss.html</guid><category><![CDATA[Goss]]></category><category><![CDATA[DNS]]></category><category><![CDATA[Testing]]></category><category><![CDATA[DevOps]]></category><category><![CDATA[Linux]]></category><category><![CDATA[Monitoring]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Mon, 20 Feb 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Easy Infrastructure Testing with Goss]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>In the world of infrastructure; new servers, VMs, containers or applications are often manually validated by a human. Some form of build document or checkbox exercise takes place to confirm that the piece of infrastructure is ready for use. Even with configuration management, mistakes happen and humans make mistakes (damn humans).</p>
@@ -472,4 +596,4 @@ profile::base::dns:
 <p>Most of the opinions I&#8217;ve formed are from being forced to work with some painful Puppet code setups and processes. My best advice to anyone developing their infrastructure code: Keep it simple, think about it before you go ahead, keep an open mind and don&#8217;t be afraid to change your mind or refactor when necessary.</p>
 </div>
 </div>
-</div>]]></description><link>http://www.pysysops.com/2016/11/10/1123-Puppet-Anti-Patterns.html</link><guid isPermaLink="true">http://www.pysysops.com/2016/11/10/1123-Puppet-Anti-Patterns.html</guid><category><![CDATA[Puppet]]></category><category><![CDATA[Automation]]></category><category><![CDATA[Configuration Management]]></category><category><![CDATA[Devops]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Thu, 10 Nov 2016 00:00:00 GMT</pubDate></item></channel></rss>
+</div>]]></description><link>http://www.pysysops.com/2016/11/10/1123-Puppet-Anti-Patterns.html</link><guid isPermaLink="true">http://www.pysysops.com/2016/11/10/1123-Puppet-Anti-Patterns.html</guid><category><![CDATA[Puppet]]></category><category><![CDATA[Automation]]></category><category><![CDATA[Configuration Management]]></category><category><![CDATA[Devops]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Thu, 10 Nov 2016 11:23:00 GMT</pubDate></item></channel></rss>
