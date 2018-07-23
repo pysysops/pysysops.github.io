@@ -1,0 +1,53 @@
+= Running Tasks Based on Public Holidays 
+:hp-image: /images/covers/bank_holiday.jpg
+:hp-tags: Python, Bank Holidays, Automation, Public Holidays
+
+Over the past few years I've worked for various financial organizations in different areas. Something that has come up quite often is public holidays or bank holidays in the UK. They're a non-working day for most people but I've still encountered organisations that need certain things like cron jobs to run or not to run on these days.
+
+Recently the scheduled task in question was a file transfer to a payment provider which required manual acceptance from someone in the business. I noticed a calendar invite pop-up for me to "disable epayment file transfer" before every bank holiday and another calendar invite to "re-enable epayment file transfer" before the next file transfer at 6am. HELL NO! I hate repetitive manual things with a passion, even if it's only 8 days a year.
+
+I began my search for a cli tool to help me. Failing to find such a tool I began a hunt for a Python package to help me out as the scheduled task was written in Python. I found a few packages but some required a call to external web services. Then I found the `holidays` package: https://pypi.org/project/holidays/
+
+As I started to write the code to handle public holidays... `import holidays`... I stopped myself. I had originally been searching for a cli tool to run as part of the systemd timer so I could run something like this:
+```
+is_it_a_holiday_command || /opt/scripts/epayment_transfer
+```
+So, rather than building the logic into the transfer script I wrote a cli tool to do it.
+
+The tool which I've named `publicholiday` is on Github: https://github.com/timbirk/python-publicholiday and has been published to PyPi: https://pypi.org/project/publicholiday/
+
+== Installation
+Installation is as simple as: `pip install publicholiday`
+
+== Usage
+Using `publicholiday` is easy, the command will exit with a status code of 0 if today is a public holiday and exit with a status code of 1 if today is not a public holiday:
+
+```
+$ publicholiday --help
+Usage: publicholiday [OPTIONS]
+
+  Is it a public holiday?
+
+Options:
+  -c, --country TEXT  Supported country name or code.
+  --help              Show this message and exit.
+
+# Run a script on a public holiday
+$ publicholiday && /thing/to/run.sh
+
+# Don't run a script on public holidays (run it on all other days).
+$ publicholiday || /thing/to/run.sh
+```
+
+By default, `publicholiday` uses UK bank holidays. It is possible to pass in a country using either the name or the short code as defined [here](https://pypi.org/project/holidays/). Examples:
+```
+# Run a script on a Argentinian public holiday
+$ publicholiday -c Argentina && /thing/to/run.sh
+
+# Don't run a script on US public holidays
+$ publicholiday -c US || /thing/to/run.sh
+```
+
+Currently, only countries are supported. Province / state level holidays would be reasonably easy to implement and I'd be open to a PR with tests and documentation for that but it's outside of the scope of my current needs.
+
+Hopefully if you stumble upon this post it helps solve your problem. 
