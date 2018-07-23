@@ -1,13 +1,94 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Wed, 11 Jul 2018 12:54:07 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Securing Jenkins Workspaces]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Mon, 23 Jul 2018 10:02:13 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Running Tasks Based on Public Holidays]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Jenkins is an immensely powerful tool for building, packaging and deploying your software. It cans stand in as an ad-hoc task runner, an orchestrator when paired with Ansible, mCollective, salt or even just plain old SSH (or pssh). You can even replace your cron jobs with it to give some visibility into what tasks have run, when and by who or what.</p>
+<p>Over the past few years I&#8217;ve worked for various financial organizations in different areas. Something that has come up quite often is public holidays or bank holidays in the UK. They&#8217;re a non-working day for most people but I&#8217;ve still encountered organisations that need certain things like cron jobs to run or not to run on these days.</p>
 </div>
 <div class="paragraph">
-<p>I&#8217;ve been using it for Jenkins most of my tech life and think that in terms of flexibility, automation and power it&#8217;s one of the best tools to have in your box. There is one problem though, by default it isn&#8217;t very secure.</p>
+<p>Recently the scheduled task in question was a file transfer to a payment provider which required manual acceptance from someone in the business. I noticed a calendar invite pop-up for me to "disable epayment file transfer" before every bank holiday and another calendar invite to "re-enable epayment file transfer" before the next file transfer at 6am. HELL NO! I hate repetitive manual things with a passion, even if it&#8217;s only 8 days a year.</p>
 </div>
 <div class="paragraph">
-<p>Even after following best practices on <a href="https://jenkins.io/doc/book/system-administration/security/">Securing Jenkins</a> it has amongst other things something which can be a security concern Workspaces, by default you have 3 options:</p>
+<p>I began my search for a cli tool to help me. Failing to find such a tool I began a hunt for a Python package to help me out as the scheduled task was written in Python. I found a few packages but some required a call to external web services. Then I found the <code>holidays</code> package: <a href="https://pypi.org/project/holidays/" class="bare">https://pypi.org/project/holidays/</a></p>
+</div>
+<div class="paragraph">
+<p>As I started to write the code to handle public holidays&#8230;&#8203; <code>import holidays</code>&#8230;&#8203; I stopped myself. I had originally been searching for a cli tool to run as part of the systemd timer so I could run something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>is_it_a_holiday_command || /opt/scripts/epayment_transfer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So, rather than building the logic into the transfer script I wrote a cli tool to do it.</p>
+</div>
+<div class="paragraph">
+<p>The tool which I&#8217;ve named <code>publicholiday</code> is on Github: <a href="https://github.com/timbirk/python-publicholiday" class="bare">https://github.com/timbirk/python-publicholiday</a> and has been published to PyPi: <a href="https://pypi.org/project/publicholiday/" class="bare">https://pypi.org/project/publicholiday/</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installation">Installation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Installation is as simple as: <code>pip install publicholiday</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage">Usage</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Using <code>publicholiday</code> is easy, the command will exit with a status code of 0 if today is a public holiday and exit with a status code of 1 if today is not a public holiday:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ publicholiday --help
+Usage: publicholiday [OPTIONS]
+
+  Is it a public holiday?
+
+Options:
+  -c, --country TEXT  Supported country name or code.
+  --help              Show this message and exit.
+
+# Run a script on a public holiday
+$ publicholiday &amp;&amp; /thing/to/run.sh
+
+# Don't run a script on public holidays (run it on all other days).
+$ publicholiday || /thing/to/run.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default, <code>publicholiday</code> uses UK bank holidays. It is possible to pass in a country using either the name or the short code as defined [here](<a href="https://pypi.org/project/holidays/" class="bare">https://pypi.org/project/holidays/</a>). Examples:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code># Run a script on a Argentinian public holiday
+$ publicholiday -c Argentina &amp;&amp; /thing/to/run.sh
+
+# Don't run a script on US public holidays
+$ publicholiday -c US || /thing/to/run.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Currently, only countries are supported. Province / state level holidays would be reasonably easy to implement and I&#8217;d be open to a PR with tests and documentation for that but it&#8217;s outside of the scope of my current needs.</p>
+</div>
+<div class="paragraph">
+<p>Hopefully if you stumble upon this post it helps solve your problem.</p>
+</div>
+</div>
+</div>]]></description><link>http://www.pysysops.com/2018/07/23/Running-Tasks-Based-on-Public-Holidays.html</link><guid isPermaLink="true">http://www.pysysops.com/2018/07/23/Running-Tasks-Based-on-Public-Holidays.html</guid><category><![CDATA[Python]]></category><category><![CDATA[Bank Holidays]]></category><category><![CDATA[Automation]]></category><category><![CDATA[Public Holidays]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Mon, 23 Jul 2018 00:00:00 GMT</pubDate></item><item><title><![CDATA[Securing Jenkins Workspaces]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Jenkins is a powerful tool for building, packaging and deploying your software. It can stand in as an ad-hoc task runner, an orchestrator and replace your cron jobs to give some visibility into what tasks have run, when and by who or what.</p>
+</div>
+<div class="paragraph">
+<p>I&#8217;ve been using Jenkins for most of my tech life and think that in terms of flexibility, automation and power it&#8217;s one of the best tools to have in your box. There is one problem I have with Jenkins, by default it isn&#8217;t very secure.</p>
+</div>
+<div class="paragraph">
+<p>Even after following <a href="https://jenkins.io/doc/book/system-administration/security/">Securing Jenkins</a> it has amongst other things something which can be a security concern: Workspace access through the web UI.</p>
+</div>
+<div class="paragraph">
+<p>By default you have 3 options to control access to workspaces:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -23,7 +104,7 @@
 </ol>
 </div>
 <div class="paragraph">
-<p>I generally stick to option 3 and clean the job workspace post build. This keeps build agents HDD space happy and reduces leaking secrets or sensitive information out. But there are times when it&#8217;s necessary to keep files generated at build time in a long-lived workspace to be used again next time the job triggers. Some of these files might be sensitive but I also want the workspace readable for some things like logs.</p>
+<p>I generally stick to option 2 and 3, remove read access and clean the job workspace post build. This keeps build agents disk space happy and reduces leaking secrets or sensitive information out through logs or files in the workspace.</p>
 </div>
 </div>
 </div>
@@ -31,10 +112,10 @@
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>At various employers I&#8217;ve often setup automated internal CA&#8217;s to handle issuing certificates and re-generating them on expiry. In recent years I&#8217;ve moved to using LetsEncrypt wherever possible. I&#8217;ve found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.</p>
+<p>I&#8217;ve often setup automated internal CA&#8217;s to handle issuing certificates and re-generating them on expiry. In recent years, I&#8217;ve moved to using LetsEncrypt wherever possible. I&#8217;ve found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.</p>
 </div>
 <div class="paragraph">
-<p>Each time an instance provsions it requests some certificates, as storage is usually ephemeral LetsEncrypt will issue a new certificate to each instance. If you&#8217;ve ever tried the same thing, you&#8217;ll find that you can hit LetsEncrypt limits pretty quickly.</p>
+<p>Each time an instance is provisioned, it requests some certificates, as storage is usually not persistent LetsEncrypt will issue a new certificate to each instance. If you&#8217;ve ever tried the same thing, you&#8217;ll find that you can hit LetsEncrypt limits pretty quickly.</p>
 </div>
 <div class="paragraph">
 <p>To solve this problem I created a Jenkins job to handle the certificate generation with the Certbot Docker container, build an rpm package containing the certificates and push the rpm up to our private yum repos. From there all instances can have the <code>cp-certs</code> package installed as part of there bootstrapping / initial provisioning.</p>
@@ -45,7 +126,7 @@
 <h2 id="_the_problem">The Problem</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don&#8217;t like the idea of these files sitting there in teh workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic&#8230;&#8203;</p>
+<p>This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don&#8217;t like the idea of these files sitting there in the workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic&#8230;&#8203;</p>
 </div>
 </div>
 </div>
@@ -53,7 +134,7 @@
 <h2 id="_the_solution">The Solution</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There&#8217;s nothing. I sat and thought about "What is the actual risk I&#8217;m trying to avoid?" and came up with:</p>
+<p>Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There&#8217;s nothing. I sat and thought about "What is the actual risk I&#8217;m trying to reduce?" and came up with:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -69,7 +150,7 @@
 <p>It dawned on me that the solution was easier than I thought (damn brain getting in the way). If I move the relevant sensitive files out of the workspace, there&#8217;s no longer a risk of someone borrowing them from the UI and if I encrypt / archive the files with a strong secret then they&#8217;ll be reasonably secure on the file system.</p>
 </div>
 <div class="paragraph">
-<p>Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it&#8217;s a reasonable attempt at making them secure.</p>
+<p>Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it&#8217;s a reasonable attempt at improving security.</p>
 </div>
 <div class="sect2">
 <h3 id="_how_do_you_do_it">How do you do it?</h3>
@@ -86,7 +167,7 @@ You&#8217;ll need GPG installed on your Jenkins CI agents.
 </table>
 </div>
 <div class="paragraph">
-<p>First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable <code>SECURE_KEY</code> in this example.</p>
+<p>First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable <code>SECURE_KEY</code> (in this example).</p>
 </div>
 <div class="paragraph">
 <p>Add something like the following to your job as the first shell step:</p>
@@ -97,11 +178,11 @@ You&#8217;ll need GPG installed on your Jenkins CI agents.
 
 if [[ -f "$SECURE_DIR/secured_state.tgz.gpg" ]]
 then
-  echo 'INFO: Restoring letsencrypt state'
+  echo 'INFO: Restoring secured workspace'
   gpg --yes --batch --passphrase=$SECURE_KEY $SECURE_DIR/secured_state.tgz.gpg
   tar -xzf $SECURE_DIR/secured_state.tgz.gpg
 else
-  echo 'INFO: Creating secure state dir'
+  echo 'INFO: Creating directory for secured workspace'
   mkdir -m 700 -p $SECURE_DIR
 fi</code></pre>
 </div>
@@ -113,7 +194,7 @@ fi</code></pre>
 <div class="content">
 <pre class="highlight"><code>SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 
-echo 'INFO: Updating secure state'
+echo 'INFO: Creating secured workspace'
 tar -czf $SECURE_DIR/secured_state.tgz .
 gpg --yes --batch --passphrase=$SECURE_KEY -c $SECURE_DIR/secured_state.tgz
 rm -f $SECURE_DIR/secured_state.tgz &amp;&amp; rm -rf sensitive files and dirs/</code></pre>
@@ -596,4 +677,4 @@ profile::base::dns:
 <p>Most of the opinions I&#8217;ve formed are from being forced to work with some painful Puppet code setups and processes. My best advice to anyone developing their infrastructure code: Keep it simple, think about it before you go ahead, keep an open mind and don&#8217;t be afraid to change your mind or refactor when necessary.</p>
 </div>
 </div>
-</div>]]></description><link>http://www.pysysops.com/2016/11/10/1123-Puppet-Anti-Patterns.html</link><guid isPermaLink="true">http://www.pysysops.com/2016/11/10/1123-Puppet-Anti-Patterns.html</guid><category><![CDATA[Puppet]]></category><category><![CDATA[Automation]]></category><category><![CDATA[Configuration Management]]></category><category><![CDATA[Devops]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Thu, 10 Nov 2016 11:23:00 GMT</pubDate></item></channel></rss>
+</div>]]></description><link>http://www.pysysops.com/2016/11/10/1123-Puppet-Anti-Patterns.html</link><guid isPermaLink="true">http://www.pysysops.com/2016/11/10/1123-Puppet-Anti-Patterns.html</guid><category><![CDATA[Puppet]]></category><category><![CDATA[Automation]]></category><category><![CDATA[Configuration Management]]></category><category><![CDATA[Devops]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Thu, 10 Nov 2016 00:00:00 GMT</pubDate></item></channel></rss>
