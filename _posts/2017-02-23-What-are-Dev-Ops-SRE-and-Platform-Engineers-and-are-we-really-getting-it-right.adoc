@@ -1,4 +1,4 @@
-= What is DevOps and why is DevOps great for any tech team?
+= What are DevOps, SRE and Platform Engineers? and are we really getting it right?
 :hp-image: /images/covers/debate.gif
 :hp-tags: DevOps, Thoughts, Management
 
