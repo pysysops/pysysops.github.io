@@ -2,26 +2,32 @@
 // :hp-image: /covers/cover.png
 :hp-tags: Terraform, Terrafile, xterrafile, Infrastructure as Code
 
-Most (well, some) of us know what Terraform is. It's an Open Source tool created and maintained by Hashicorp to help us specify and manage out Infrastructure as Code across multiple Infrastructure as a Service (IaaS) and Cloud providers.
+Most (well, some) of us know what Terraform is. It's an Open Source tool created and maintained by Hashicorp to help us specify and manage our Infrastructure as Code across multiple Infrastructure as a Service (IaaS) and Cloud providers.
 
-When you start learning Terraform you make use of it's primitive types: `data` sources an `resource` statements. If you're trying it out and simply creating a Ghost publication in _The Cloud_ these primitives do the job. It's a great way to tie together your understandings of the building blocks to make something on whatever Cloud provider you're using. Typically, a VPC, a few Subnets, A Routing table, a Nat Gateway, an ELB, a handful of Security Groups, an Instance and an database will have you up and running with a shiny new Ghost publication. A bit of an expensive Ghost publication.
+When you start learning Terraform you make use of it's primitive types: `data` sources and `resource` statements. If you're trying it out and simply creating a Ghost publication in _The Cloud_ these primitives do the job. It's a great way to tie together your understandings of the building blocks to make something on whatever Cloud provider you're using. Typically, a VPC, a few Subnets, A Routing table, a Nat Gateway, an ELB, a handful of Security Groups, an Instance and a Database will have you up and running with a shiny new Ghost publication. A bit of an expensive Ghost publication.
 
-Unfortunately most of us aren't doing simple things as a one-off at our organisations, we're building complex and often evolutionary infrastructures across multiple projects, products, teams, accounts, locations and cloud providers. Handcrafting all of your organisations Terraform code from the primitives offered would be a nightmare from the beginning. Maintaining consistency across _all the things_ would be rather difficult.
+Unfortunately most of us aren't doing simple things as a one-off at our organisations, we're building complex and often evolutionary infrastructures across multiple projects, products, teams, accounts, locations and cloud providers. Handcrafting all of your organisation's Terraform code from the primitives offered would be a nightmare from the beginning. Maintaining consistency across _all the things_ would be pretty much impossible.
 
-This is where the idea of *modules* steps in to help us out. Modules allow you to create reusable collections of resources and that are often used together to do something. For example EC2 instances will usually belong to an Autoscaling Groups, have Launch Configurations and some Security Groups. By bundling these into a module you can reuse the same code by passing parameters into the module and you get a similar result each time. Before we break out the _module shotgun_ it's worth understanding that there are multiple types of module.
+Terraform has some good documenation on writing basic modules:
+
+- https://www.terraform.io/docs/modules/index.html
+
+This is where Terraform *modules* help us out. Modules allow you to create reusable collections of resources that are often used together to do something and expose them as a single resource in Terraform. For example EC2 instances will usually belong to an Autoscaling Group, have a Launch Configuration and be attached to some Security Groups. By bundling these into a module you can reuse the same code by passing parameters into the module and you get a similar result each time. Before we break out the _module shotgun_ it's worth understanding that there are multiple types of module.
 
 == Component Modules
-A component module has a very focussed job and only interacts with a single cloud provider, it might group together an ASG, Launch Configuration and Security Group or a VPC, Subnets, Route Tables and Internet / NAT Gateways. These are typically the modules you'll find on the Terraform Registry. Some good examples are:
+A component module has a focussed job and only interacts with a single cloud provider. It might group together an ASG, Launch Configuration and Security Group or a VPC, Subnets, Route Tables and Internet / NAT Gateways.
+
+Component modules are typically the type of module you'll find on the Terraform Registry. Some good examples are:
 
 - https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws
 - https://registry.terraform.io/modules/terraform-aws-modules/autoscaling/aws
 - https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws
-- https://registry.terraform.io/modules/devops4me/web-load-balancers/aws
+- https://registry.terraform.io/modules/terraform-aws-modules/alb/aws
 
 == Infrastructure or Service Modules
 So, you've started using upstream component modules and you start to realise that you're doing the same things, adding the same tags, using `autoscaling`, `security-group` and `web-load-balancers` together to create a service and inputting a lot of default boilerplate values.
 
-This is where Infrastructure modules take over. You can use Terraform modules within other modules. You can create modules that enforce best practice or organisational requirements and create things in a consistent way across your organisation. They can be used to enforce instance sizes that can be used or database backups and restores. They often make use of multiple providers. An example of an infrastructure module is:
+This is where Infrastructure modules take over. You can use Terraform modules within other modules. You can create modules that enforce best practice or organisational requirements and create things in a consistent way across your organisation. They can be used to enforce instance sizes or apply consistent best practice to database backups. They sometimes make use of multiple providers. An example of an infrastructure module is:
 
 - https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/asg-elb
 - https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/mysql
@@ -32,4 +38,6 @@ This is a coin I termed for modules that do nothing more than give static output
 - https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/ec2_spot_prices
 - Implemented here: https://github.com/dinocorp/webs-infra/blob/master/terraform/local-modules/asg-elb/main.tf#L16
 
+Hopefully some of this makes sense and can help you evolve your Terraform code into something more beautiful than it was previously. it's a bit of a brain dump of my thoughts and experience so it might not be the most coherent post you've read. Feel free to leave a comment or hunt me down on Github and have a chat to gain greater understanding.
 
+Something I haven't touched on here is managing Terraform module versions and dependencies. I might braindump a post on this soon. Thanks for reading!
