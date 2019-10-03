@@ -2,7 +2,7 @@
 // :hp-image: /covers/cover.png
 :hp-tags: Terraform, Terrafile, xterrafile, Infrastructure as Code
 
-Most of us know what Terraform is, it's an Open Source tool created and maintained by Hashicorp to help us specify and manage out Infrastructure as Code across multiple Infrastructure as a Service (IaaS) and Cloud providers.
+Most (well, some) of us know what Terraform is. It's an Open Source tool created and maintained by Hashicorp to help us specify and manage out Infrastructure as Code across multiple Infrastructure as a Service (IaaS) and Cloud providers.
 
 When you start learning Terraform you make use of it's primitive types: `data` sources an `resource` statements. If you're trying it out and simply creating a Ghost publication in _The Cloud_ these primitives do the job. It's a great way to tie together your understandings of the building blocks to make something on whatever Cloud provider you're using. Typically, a VPC, a few Subnets, A Routing table, a Nat Gateway, an ELB, a handful of Security Groups, an Instance and an database will have you up and running with a shiny new Ghost publication. A bit of an expensive Ghost publication.
 
@@ -11,7 +11,7 @@ Unfortunately most of us aren't doing simple things as a one-off at our organisa
 This is where the idea of *modules* steps in to help us out. Modules allow you to create reusable collections of resources and that are often used together to do something. For example EC2 instances will usually belong to an Autoscaling Groups, have Launch Configurations and some Security Groups. By bundling these into a module you can reuse the same code by passing parameters into the module and you get a similar result each time. Before we break out the _module shotgun_ it's worth understanding that there are multiple types of module.
 
 == Component Modules
-A component module has a very focussed job and only interact with a single cloud provider, it might group together an ASG, Launch Configuration and Security Group or a VPC, Subnets, Route Tables and Internet / NAT Gateways. These are typically the modules you'll find on the Terraform Registry. Some good examples are:
+A component module has a very focussed job and only interacts with a single cloud provider, it might group together an ASG, Launch Configuration and Security Group or a VPC, Subnets, Route Tables and Internet / NAT Gateways. These are typically the modules you'll find on the Terraform Registry. Some good examples are:
 
 - https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws
 - https://registry.terraform.io/modules/terraform-aws-modules/autoscaling/aws
