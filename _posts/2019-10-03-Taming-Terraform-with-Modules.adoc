@@ -21,7 +21,10 @@ A component module has a very focussed job and only interact with a single cloud
 == Infrastructure or Service Modules
 So, you've started using upstream component modules and you start to realise that you're doing the same things, adding the same tags, using `autoscaling`, `security-group` and `web-load-balancers` together to create a service and inputting a lot of default boilerplate values.
 
-This is where Infrastructure modules take over. You can use Terraform modules within other modules. You can create modules that enforce best practice or organisational requirements and create things in a consistent way across your organisation. They can be used to enforce instance sizes that can be used or database backups and restores. They often make use of multiple providers.
+This is where Infrastructure modules take over. You can use Terraform modules within other modules. You can create modules that enforce best practice or organisational requirements and create things in a consistent way across your organisation. They can be used to enforce instance sizes that can be used or database backups and restores. They often make use of multiple providers. An example of an infrastructure module is:
+
+- https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/asg-elb
+- https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/mysql
 
 == Data Modules
 This is a coin I termed for modules that do nothing more than give static output for use in other modules. They might be used to enforce available instance types, provide some data like an instance price to use for spot prices or normalise instance sizes across cloud providers. An example of a data module might be something like:
