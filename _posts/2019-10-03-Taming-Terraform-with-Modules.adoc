@@ -1,5 +1,5 @@
 = Taming Terraform with Modules
-// :hp-image: /covers/cover.png
+:hp-image: /images/covers/cover-01.jpg
 :hp-tags: Terraform, Terrafile, xterrafile, Infrastructure as Code
 
 Most (well, some) of us know what Terraform is. It's an Open Source tool created and maintained by Hashicorp to help us specify and manage our Infrastructure as Code across multiple Infrastructure as a Service (IaaS) and Cloud providers.
