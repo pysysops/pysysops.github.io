@@ -1,0 +1,10 @@
+= Taming Terraform with Modules
+// :hp-image: /covers/cover.png
+:hp-tags: Terraform, Terrafile, xterrafile, Infrastructure as Code
+
+Most of us know what Terraform is, it's an Open Source tool created and maintained by Hashicorp to help us specify and manage out Infrastructure as Code across multiple Infrastructure as a Service (IaaS) and Cloud providers.
+
+When you start learning Terraform you make use of it's primitive types: `data` sources an `resource` statements. If you're trying it out and simply creating a Ghost publication in _The Cloud_ these primitives do the job. It's a great way to tie together your understandings of the building blocks to make something on whatever Cloud provider you're using. Typically, a VPC, a few Subnets, A Routing table, a Nat Gateway, an ELB, a handful of Security Groups, an Instance and an database will have you up and running with a shiny new Ghost publication. A bit of an expensive Ghost publication.
+
+
+
