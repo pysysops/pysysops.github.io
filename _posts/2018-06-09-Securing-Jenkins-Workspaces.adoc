@@ -84,7 +84,7 @@ SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 echo 'INFO: Creating secured workspace'
 tar -czf ${SECURE_DIR}/secured_state.tgz .
 gpg --yes --batch --passphrase=${SECURE_KEY} -c ${SECURE_DIR}/secured_state.tgz
-rm -rf ${SECURE_DIR}/secured_state.tgz ${WORKSPACE}/* ${WORKSPACE}/.*
+rm -rf ${SECURE_DIR}/secured_state.tgz ${WORKSPACE}/*.key
 ```
 
 At this point you'll have a workspace with only safe files in it. You can always apply a workspace cleanup after the archive / encryption has run to get rid of all files.
