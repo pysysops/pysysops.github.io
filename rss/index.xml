@@ -1,101 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Thu, 03 Oct 2019 14:25:16 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Taming Terraform with Modules]]></title><description><![CDATA[<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>Most (well, some) of us know what Terraform is. It&#8217;s an Open Source tool created and maintained by Hashicorp to help us specify and manage our Infrastructure as Code across multiple Infrastructure as a Service (IaaS) and Cloud providers.</p>
-</div>
-<div class="paragraph">
-<p>When you start learning Terraform you make use of it&#8217;s primitive types: <code>data</code> sources and <code>resource</code> statements. If you&#8217;re trying it out and simply creating a Ghost publication in <em>The Cloud</em> these primitives do the job. It&#8217;s a great way to tie together your understandings of the building blocks to make something on whatever Cloud provider you&#8217;re using. Typically, a VPC, a few Subnets, A Routing table, a Nat Gateway, an ELB, a handful of Security Groups, an Instance and a Database will have you up and running with a shiny new Ghost publication. A bit of an expensive Ghost publication.</p>
-</div>
-<div class="paragraph">
-<p>Unfortunately most of us aren&#8217;t doing simple things as a one-off at our organisations, we&#8217;re building complex and often evolutionary infrastructures across multiple projects, products, teams, accounts, locations and cloud providers. Handcrafting all of your organisation&#8217;s Terraform code from the primitives offered would be a nightmare from the beginning. Maintaining consistency across <em>all the things</em> would be pretty much impossible.</p>
-</div>
-<div class="paragraph">
-<p>Terraform has some good documenation on writing basic modules:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://www.terraform.io/docs/modules/index.html" class="bare">https://www.terraform.io/docs/modules/index.html</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>This is where Terraform <strong>modules</strong> help us out. Modules allow you to create reusable collections of resources that are often used together to do something and expose them as a single resource in Terraform. For example EC2 instances will usually belong to an Autoscaling Group, have a Launch Configuration and be attached to some Security Groups. By bundling these into a module you can reuse the same code by passing parameters into the module and you get a similar result each time. Before we break out the <em>module shotgun</em> it&#8217;s worth understanding that there are multiple types of module.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_component_modules">Component Modules</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A component module has a focussed job and only interacts with a single cloud provider. It might group together an ASG, Launch Configuration and Security Group or a VPC, Subnets, Route Tables and Internet / NAT Gateways.</p>
-</div>
-<div class="paragraph">
-<p>Component modules are typically the type of module you&#8217;ll find on the Terraform Registry. Some good examples are:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws" class="bare">https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws</a></p>
-</li>
-<li>
-<p><a href="https://registry.terraform.io/modules/terraform-aws-modules/autoscaling/aws" class="bare">https://registry.terraform.io/modules/terraform-aws-modules/autoscaling/aws</a></p>
-</li>
-<li>
-<p><a href="https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws" class="bare">https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws</a></p>
-</li>
-<li>
-<p><a href="https://registry.terraform.io/modules/terraform-aws-modules/alb/aws" class="bare">https://registry.terraform.io/modules/terraform-aws-modules/alb/aws</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_infrastructure_or_service_modules">Infrastructure or Service Modules</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>So, you&#8217;ve started using upstream component modules and you start to realise that you&#8217;re doing the same things, adding the same tags, using <code>autoscaling</code>, <code>security-group</code> and <code>web-load-balancers</code> together to create a service and inputting a lot of default boilerplate values.</p>
-</div>
-<div class="paragraph">
-<p>This is where Infrastructure modules take over. You can use Terraform modules within other modules. You can create modules that enforce best practice or organisational requirements and create things in a consistent way across your organisation. They can be used to enforce instance sizes or apply consistent best practice to database backups. They sometimes make use of multiple providers. An example of an infrastructure module is:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/asg-elb" class="bare">https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/asg-elb</a></p>
-</li>
-<li>
-<p><a href="https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/mysql" class="bare">https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/mysql</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_data_modules">Data Modules</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>This is a coin I termed for modules that do nothing more than give static output for use in other modules. They might be used to enforce available instance types, provide some data like an instance price to use for spot prices or normalise instance sizes across cloud providers. An example of a data module might be something like:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/ec2_spot_prices" class="bare">https://github.com/dinocorp/webs-infra/tree/master/terraform/local-modules/ec2_spot_prices</a></p>
-</li>
-<li>
-<p>Implemented here: <a href="https://github.com/dinocorp/webs-infra/blob/master/terraform/local-modules/asg-elb/main.tf#L16" class="bare">https://github.com/dinocorp/webs-infra/blob/master/terraform/local-modules/asg-elb/main.tf#L16</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Hopefully some of this makes sense and can help you evolve your Terraform code into something more beautiful than it was previously. it&#8217;s a bit of a brain dump of my thoughts and experience so it might not be the most coherent post you&#8217;ve read. Feel free to leave a comment or hunt me down on Github and have a chat to gain greater understanding.</p>
-</div>
-<div class="paragraph">
-<p>Something I haven&#8217;t touched on here is managing Terraform module versions and dependencies. I might braindump a post on this soon. Thanks for reading!</p>
-</div>
-</div>
-</div>]]></description><link>http://www.pysysops.com/2019/10/03/Taming-Terraform-with-Modules.html</link><guid isPermaLink="true">http://www.pysysops.com/2019/10/03/Taming-Terraform-with-Modules.html</guid><category><![CDATA[Terraform]]></category><category><![CDATA[Terrafile]]></category><category><![CDATA[xterrafile]]></category><category><![CDATA[Infrastructure as Code]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Thu, 03 Oct 2019 00:00:00 GMT</pubDate></item><item><title><![CDATA[Running Tasks Based on Public Holidays]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 15 Oct 2019 18:49:06 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Running Tasks Based on Public Holidays]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Over the past few years I&#8217;ve worked for various financial organizations in different areas. Something that has come up quite often is public holidays or bank holidays in the UK. They&#8217;re a non-working day for most people but I&#8217;ve still encountered organisations that need certain things like cron jobs to run or not to run on these days.</p>
@@ -300,7 +203,7 @@ $ publicholiday -c US || /thing/to/run.sh</code></pre>
 <p>Combining this with the <a href="https://github.com/aelsabbahy/goss/blob/master/docs/manual.md#example-4">nagios</a> output and creating a monitoring check from it could be helpful in identifying future issues or alerting when a record might have been "cleaned up".</p>
 </div>
 </div>
-</div>]]></description><link>http://www.pysysops.com/2017/02/20/Testing-DNS-Infrastructure-with-Goss.html</link><guid isPermaLink="true">http://www.pysysops.com/2017/02/20/Testing-DNS-Infrastructure-with-Goss.html</guid><category><![CDATA[Goss]]></category><category><![CDATA[DNS]]></category><category><![CDATA[Testing]]></category><category><![CDATA[DevOps]]></category><category><![CDATA[Linux]]></category><category><![CDATA[Monitoring]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Mon, 20 Feb 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Easy Infrastructure Testing with Goss]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://www.pysysops.com/2017/02/20/Testing-DNS-Infrastructure-with-Goss.html</link><guid isPermaLink="true">http://www.pysysops.com/2017/02/20/Testing-DNS-Infrastructure-with-Goss.html</guid><category><![CDATA[goss]]></category><category><![CDATA[DNS]]></category><category><![CDATA[Testing]]></category><category><![CDATA[DevOps]]></category><category><![CDATA[Linux]]></category><category><![CDATA[Monitoring]]></category><dc:creator><![CDATA[Tim Birkett]]></dc:creator><pubDate>Mon, 20 Feb 2017 00:00:00 GMT</pubDate></item><item><title><![CDATA[Easy Infrastructure Testing with Goss]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>In the world of infrastructure; new servers, VMs, containers or applications are often manually validated by a human. Some form of build document or checkbox exercise takes place to confirm that the piece of infrastructure is ready for use. Even with configuration management, mistakes happen and humans make mistakes (damn humans).</p>
