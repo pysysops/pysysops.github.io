@@ -45,7 +45,7 @@ Obviously, someone who knows or can access the secret (me) and has access to the
 
 === How do you do it?
 
-IMPORTANT: You'll need GPG installed on your Jenkins CI agents.
+⚠️ You'll need GPG installed on your Jenkins CI agents.
 
 First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret as an environment variable. `SECURE_KEY` in this example.
 
