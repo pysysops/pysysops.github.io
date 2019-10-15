@@ -1,5 +1,5 @@
 = Testing DNS Infrastructure with Goss
-:hp-tags: Goss, DNS, Testing, DevOps, Linux, Monitoring
+:hp-tags: goss, DNS, Testing, DevOps, Linux, Monitoring
 :hp-image: /images/covers/OFFLINE.jpg
 
 In a previous post we got an introduction to http://www.pysysops.com/2017/01/10/Easy-Infrastructure-Testing-with-Goss.html["Easy Infrastructure Testing with Goss"].
