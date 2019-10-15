@@ -47,27 +47,44 @@ First, create a strong secret in Jenkins credential store. In the job you want t
 
 Add something like the following to your job as the first shell step:
 ```
+#!/bin/bash
+set -eu -o pipefail
+
+#
+# Check for encrypted workspace archive and extract or create directory.
+#
+
 SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 
-if [[ -f "$SECURE_DIR/secured_state.tgz.gpg" ]]
+if [[ -f "${SECURE_DIR}/secured_state.tgz.gpg" ]]
 then
-  echo 'INFO: Restoring secured workspace'
-  gpg --yes --batch --passphrase=$SECURE_KEY $SECURE_DIR/secured_state.tgz.gpg
-  tar -xzf $SECURE_DIR/secured_state.tgz.gpg
+    echo 'INFO: Restoring secured workspace'
+    gpg --yes --batch --passphrase=${SECURE_KEY} \
+        ${SECURE_DIR}/secured_state.tgz.gpg
+
+    tar -xzf ${SECURE_DIR}/secured_state.tgz
 else
-  echo 'INFO: Creating directory for secured workspace'
-  mkdir -m 700 -p $SECURE_DIR
+    echo 'INFO: Creating directory for secured workspace'
+    mkdir -m 700 -p ${SECURE_DIR}
 fi
+exit 0
 ```
 
 As the last shell step or a postbuild script something like the following should work:
 ```
+#!/bin/bash
+set -eux -o pipefail
+
+#
+# GPG encrypt workspace and remove all insecure files.
+#
+
 SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 
 echo 'INFO: Creating secured workspace'
-tar -czf $SECURE_DIR/secured_state.tgz .
-gpg --yes --batch --passphrase=$SECURE_KEY -c $SECURE_DIR/secured_state.tgz
-rm -f $SECURE_DIR/secured_state.tgz && rm -rf sensitive files and dirs/
+tar -czf ${SECURE_DIR}/secured_state.tgz .
+gpg --yes --batch --passphrase=${SECURE_KEY} -c ${SECURE_DIR}/secured_state.tgz
+rm -rf ${SECURE_DIR}/secured_state.tgz ${WORKSPACE}/* ${WORKSPACE}/.*
 ```
 
 At this point you'll have a workspace with only safe files in it. You can always apply a workspace cleanup after the archive / encryption has run to get rid of all files.
