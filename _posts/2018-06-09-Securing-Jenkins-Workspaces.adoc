@@ -8,7 +8,7 @@ I've been using Jenkins for most of my tech life and think that in terms of flex
 
 Even after following https://jenkins.io/doc/book/system-administration/security/[Securing Jenkins] it has amongst other things something which can be a security concern: Workspace access through the web UI.
 
-By default you have 3 options to control access to workspaces: 
+By default you have 3 options to control access to job workspaces: 
 
 . they are readable (anonymously or by a group / specified users)
 . they are not readable
@@ -18,24 +18,28 @@ I generally stick to option 2 and 3, remove read access and clean the job worksp
 
 == Overview
 
-I've often setup automated internal CA's to handle issuing certificates and re-generating them on expiry. In recent years, I've moved to using LetsEncrypt wherever possible. I've found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.
+I've setup automated internal CA's to handle issuing certificates and re-generating them on expiry. In recent years, I've moved to using LetsEncrypt wherever possible.
 
-Each time an instance is provisioned, it requests some certificates, as storage is usually not persistent LetsEncrypt will issue a new certificate to each instance. If you've ever tried the same thing, you'll find that you can hit LetsEncrypt limits pretty quickly.
+I've found that in cloud environments that often scale up and down, running an agent like certbot on each instance is an anti-pattern.
 
-To solve this problem I created a Jenkins job to handle the certificate generation with the Certbot Docker container, build an rpm package containing the certificates and push the rpm up to our private yum repos. From there all instances can have the `cp-certs` package installed as part of there bootstrapping / initial provisioning.
+Each time an instance is provisioned, it requests some certificates, LetsEncrypt will issue a new certificate to each instance. If you've ever tried the same thing, you'll find that you can hit LetsEncrypt limits pretty quickly.
+
+To solve this problem I created a Jenkins job to handle the certificate generation with the Certbot Docker container (`lego` is a good alternative), build an rpm package containing the certificates and push the rpm up to our private yum repos. From there all instances can have the `cp-certs` package installed as part of there bootstrapping / initial provisioning.
 
 == The Problem
 
-This job runs on a schedule every 30 days. On the first run of certbot, various configuration files and private keys are generated. Whils Jenkins itself is relatively secure I don't like the idea of these files sitting there in the workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic...
+This job runs on a schedule every 7 days. On the first run of certbot, various configuration files and private keys are generated. Whilst Jenkins itself is relatively secure I don't like the idea of these files sitting there in the workspace for anyone to get hold of, try to use, accidentally commit, use to decode https traffic...
 
 == The Solution
 
-Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There's nothing. I sat and thought about "What is the actual risk I'm trying to reduce?" and came up with:
+Initially I hunted round for a while for some sort of "Secure" or "Hidden" workspace plugin. There's nothing. I sat and thought: "What is the actual risk I'm trying to reduce?" and came up with:
 
-. protect from access vis the Jenkins UI
-. protect from user access on the file system
+. access via the Jenkins UI
+. user access on the file system
 
-It dawned on me that the solution was easier than I thought (damn brain getting in the way). If I move the relevant sensitive files out of the workspace, there's no longer a risk of someone borrowing them from the UI and if I encrypt / archive the files with a strong secret then they'll be reasonably secure on the file system.
+It dawned on me that the solution might be easier than I thought (damn brain getting in the way).
+
+If I move the relevant sensitive files out of the workspace, there's no longer a risk of someone borrowing them from the UI and if I encrypt / archive the files with a strong secret then they'll be reasonably secure on the file system.
 
 Obviously, someone who knows or can access the secret (me) and has access to the file system as the root or Jenkins user (me) could get at them but it's a reasonable attempt at improving security.
 
@@ -43,7 +47,7 @@ Obviously, someone who knows or can access the secret (me) and has access to the
 
 IMPORTANT: You'll need GPG installed on your Jenkins CI agents.
 
-First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret an environment variable `SECURE_KEY` (in this example).
+First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret as an environment variable. `SECURE_KEY` in this example.
 
 Add something like the following to your job as the first shell step:
 ```
@@ -84,7 +88,7 @@ SECURE_DIR="/var/lib/jenkins/secured-workspace/$JOB_NAME"
 echo 'INFO: Creating secured workspace'
 tar -czf ${SECURE_DIR}/secured_state.tgz .
 gpg --yes --batch --passphrase=${SECURE_KEY} -c ${SECURE_DIR}/secured_state.tgz
-rm -rf ${SECURE_DIR}/secured_state.tgz ${WORKSPACE}/*.key
+rm -rf ${SECURE_DIR}/secured_state.tgz ${WORKSPACE}/* ${WORKSPACE}/.* 
 ```
 
 At this point you'll have a workspace with only safe files in it. You can always apply a workspace cleanup after the archive / encryption has run to get rid of all files.
