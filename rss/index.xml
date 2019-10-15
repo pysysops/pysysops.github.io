@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 15 Oct 2019 20:15:24 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Taming Terraform with Modules]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Tim Birkett ]]></title><description><![CDATA[cat /dev/urandom]]></description><link>http://www.pysysops.com</link><image><url>/images/index.jpg</url><title>Tim Birkett </title><link>http://www.pysysops.com</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 15 Oct 2019 20:22:58 GMT</lastBuildDate><atom:link href="http://www.pysysops.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Taming Terraform with Modules]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Most (well, some) of us know what Terraform is. It&#8217;s an Open Source tool created and maintained by Hashicorp to help us specify and manage our Infrastructure as Code across multiple Infrastructure as a Service (IaaS) and Cloud providers.</p>
@@ -257,17 +257,8 @@ $ publicholiday -c US || /thing/to/run.sh</code></pre>
 </div>
 <div class="sect2">
 <h3 id="_how_do_you_do_it">How do you do it?</h3>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-You&#8217;ll need GPG installed on your Jenkins CI agents.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>⚠️ You&#8217;ll need GPG installed on your Jenkins CI agents.</p>
 </div>
 <div class="paragraph">
 <p>First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret as an environment variable. <code>SECURE_KEY</code> in this example.</p>

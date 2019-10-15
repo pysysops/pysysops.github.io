@@ -9,7 +9,7 @@
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" type="text/css" href="//www.pysysops.com/themes/casper/assets/built/screen.css?v=1571170524426" />
+    <link rel="stylesheet" type="text/css" href="//www.pysysops.com/themes/casper/assets/built/screen.css?v=1571170978155" />
 
     <link rel="canonical" href="http://www.pysysops.com/2018/06/09/Securing-Jenkins-Workspaces.html" />
     <meta name="referrer" content="origin" />
@@ -190,17 +190,8 @@
 </div>
 <div class="sect2">
 <h3 id="_how_do_you_do_it">How do you do it?</h3>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-important" title="Important"></i>
-</td>
-<td class="content">
-You&#8217;ll need GPG installed on your Jenkins CI agents.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>⚠️ You&#8217;ll need GPG installed on your Jenkins CI agents.</p>
 </div>
 <div class="paragraph">
 <p>First, create a strong secret in Jenkins credential store. In the job you want to secure add a credentials binding to expose the strong secret as an environment variable. <code>SECURE_KEY</code> in this example.</p>
@@ -369,7 +360,7 @@ rm -rf ${SECURE_DIR}/secured_state.tgz ${WORKSPACE}/* ${WORKSPACE}/.*</code></pr
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous">
     </script>
-    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/jquery.fitvids.js?v=1571170524426"></script>
+    <script type="text/javascript" src="//www.pysysops.com/themes/casper/assets/js/jquery.fitvids.js?v=1571170978155"></script>
     <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></script>
 
     <script>
